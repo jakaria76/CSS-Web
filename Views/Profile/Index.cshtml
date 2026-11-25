@@ -21,8 +21,8 @@
 
 <style>
     body {
-        background: linear-gradient(to bottom right, #1b2a6b, #1b2a6b);
-        font-family: 'Segoe UI', sans-serif;
+        background: var(--surface-subtle);
+        font-family: var(--font-sans);
     }
 
     .profile-container {
@@ -30,66 +30,70 @@
     }
 
     .profile-card {
-        border-radius: 20px;
-        background: white;
-        padding: 30px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        border-radius: 12px;
+        background: #ffffff;
+        padding: 28px;
+        border: 1px solid #e4e4e7;
+        box-shadow: 0 1px 2px rgba(9, 9, 11, 0.05);
     }
 
     .profile-header img {
-        border: 6px solid #1b2a6b;
-        transition: 0.3s;
+        border: 3px solid #15803d;
+        transition: 0.2s;
     }
 
         .profile-header img:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
     .section-card {
-        border: 0;
-        border-radius: 14px;
-        margin-bottom: 28px;
-        background: #fff;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        border: 1px solid #e4e4e7;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        background: #ffffff;
+        box-shadow: 0 1px 2px rgba(9, 9, 11, 0.04);
         transition: 0.2s;
     }
 
         .section-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-1px);
         }
 
     .section-header {
-        background: linear-gradient(to right, #1b2a6b, #3949ab);
+        background: #fafafa;
         padding: 12px 18px;
-        font-weight: bold;
-        color: white;
-        border-radius: 14px 14px 0 0;
+        font-weight: 700;
+        color: #09090b;
+        border-bottom: 1px solid #e4e4e7;
+        border-radius: 12px 12px 0 0;
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 1.1rem;
-        letter-spacing: 0.3px;
+        gap: 10px;
+        font-size: 1rem;
+        letter-spacing: -0.01em;
     }
 
         .section-header i {
-            background: white;
-            color: #1b2a6b;
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #dcfce7;
             padding: 6px;
-            border-radius: 50%;
-            font-size: 14px;
+            border-radius: 8px;
+            font-size: 13px;
         }
 
     .info-label {
         font-weight: 600;
-        color: #1b2a6b;
+        color: #14532D;
     }
 
     .profile-edit-btn {
-        background: #1b2a6b;
+        background: #15803D;
         border: none;
         color: white;
-        padding: 8px 25px;
-        border-radius: 8px;
+        padding: 9px 25px;
+        border-radius: 10px;
+        font-weight: 600;
         transition: 0.2s;
         text-decoration: none;
         display: inline-block;
@@ -97,7 +101,7 @@
     }
 
         .profile-edit-btn:hover {
-            background: #0d1a4b;
+            background: #14532D;
             color: white;
         }
 </style>

@@ -1,19 +1,37 @@
 ﻿// ================= PAYMENT =================
 function payNow() {
+    if (!validateForm()) return;
     document.getElementById("payMethod").value = "aamarpay";
     document.getElementById("regForm").submit();
 }
 
 // ================= FORM VALIDATION =================
 function validateForm() {
+    var fullNameInput = document.querySelector('#regForm input[name="FullName"]');
+    var mobileInput = document.querySelector('#regForm input[name="Mobile"]');
+    var emailInput = document.querySelector('#regForm input[name="Email"]');
 
-    var mobile = document.querySelector('input[name="Mobile"]').value.trim();
-    var email = document.querySelector('input[name="Email"]').value.trim();
+    var fullName = fullNameInput ? fullNameInput.value.trim() : "";
+    var mobile = mobileInput ? mobileInput.value.trim() : "";
+    var email = emailInput ? emailInput.value.trim() : "";
+
+    if (fullName.length < 2) {
+        if (typeof Swal !== "undefined") {
+            Swal.fire({ icon: "warning", title: "Invalid Name", text: "Please enter your full name.", confirmButtonColor: "#15803D" });
+        } else {
+            alert("Please enter your full name.");
+        }
+        return false;
+    }
 
     // Bangladesh mobile format: 01XXXXXXXXX
     var mobileRegex = /^01[0-9]{9}$/;
     if (!mobileRegex.test(mobile)) {
-        alert("Please enter a valid Bangladesh mobile number (11 digits, starts with 01).");
+        if (typeof Swal !== "undefined") {
+            Swal.fire({ icon: "warning", title: "Invalid Mobile Number", text: "Please enter a valid 11-digit Bangladesh mobile number (starts with 01).", confirmButtonColor: "#15803D" });
+        } else {
+            alert("Please enter a valid Bangladesh mobile number (11 digits, starts with 01).");
+        }
         return false;
     }
 
@@ -21,7 +39,11 @@ function validateForm() {
     if (email.length > 0) {
         var emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
         if (!emailRegex.test(email)) {
-            alert("Invalid email format.");
+            if (typeof Swal !== "undefined") {
+                Swal.fire({ icon: "warning", title: "Invalid Email", text: "Please enter a valid email address.", confirmButtonColor: "#15803D" });
+            } else {
+                alert("Invalid email format.");
+            }
             return false;
         }
     }
@@ -45,37 +67,5 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (e) {
             alertEl.remove();
         }
-    }, 4000);
-});
-
-// ================= GOOGLE MAP =================
-
-// ================= GOOGLE MAP =================
-document.addEventListener("DOMContentLoaded", function () {
-
-    var lat = "@Model.Event.Latitude";
-    var lng = "@Model.Event.Longitude";
-
-    // Check if no lat/lng exists
-    if (!lat || !lng || lat === "null" || lng === "null" || lat === "" || lng === "") {
-        document.getElementById("mapDetail").innerHTML =
-            "<div class='text-muted text-center p-3'>Location not set</div>";
-        return;
-    }
-
-    // Load Google Map iframe
-    var mapFrame = `
-        <iframe
-            width="100%"
-            height="220"
-            style="border:0;border-radius:8px;"
-            loading="lazy"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps?q=${lat},${lng}&z=16&output=embed">
-        </iframe>
-    `;
-
-    document.getElementById("mapDetail").innerHTML = mapFrame;
-
+    }, 5000);
 });

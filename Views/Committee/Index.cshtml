@@ -1,206 +1,191 @@
 ﻿@model List<CSS.ViewModels.CommitteeMemberVM>
 @{
     ViewData["Title"] = "Committee Members";
+    string selectedCategory = ViewBag.SelectedCategory as string ?? "";
+    int totalCount = ViewBag.TotalCount ?? 0;
+    int topCount = ViewBag.TopCount ?? 0;
+    int execCount = ViewBag.ExecutiveCount ?? 0;
+    int generalCount = ViewBag.GeneralCount ?? 0;
 }
 
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/committee.css" asp-append-version="true" />
 
-<style>
-
-    /* Header Section */
-    .committee-header {
-        background: linear-gradient(135deg, #1a237e, #3949ab);
-        padding: 40px 20px;
-        border-radius: 18px;
-        text-align: center;
-        color: white;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        margin-bottom: 35px;
-    }
-
-        .committee-header h2 {
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-
-    .header-subtitle {
-        font-size: 1rem;
-        opacity: 0.9;
-        margin-top: 5px;
-    }
-
-    /* Search Bar */
-    .search-bar {
-        width: 100%;
-        max-width: 420px;
-        border-radius: 35px;
-        padding: 12px 20px;
-        border: 2px solid #d1d1d1;
-        transition: .3s;
-        font-size: 1rem;
-    }
-
-        .search-bar:focus {
-            border-color: #1a237e;
-            box-shadow: 0 0 10px rgba(26, 35, 126, 0.40);
-        }
-
-    /* Filter Buttons */
-    .filter-btn {
-        border-radius: 30px;
-        padding: 8px 20px;
-        font-weight: 600;
-        margin: 4px;
-        transition: .3s ease;
-    }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: #1a237e !important;
-            color: white !important;
-        }
-
-    /* Fixed-Size Member Cards */
-    .committee-card {
-        border-radius: 18px;
-        transition: all .35s ease-in-out;
-        padding: 15px 10px;
-        position: relative;
-        overflow: hidden;
-        min-height: 230px;
-    }
-
-        .committee-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.20);
-        }
-
-        /* Decorative gradient glow */
-        .committee-card::before {
-            content: "";
-            position: absolute;
-            height: 120px;
-            width: 120px;
-            background: rgba(26,35,126,0.12);
-            top: -40px;
-            right: -40px;
-            border-radius: 50%;
-            transition: .4s;
-        }
-
-        .committee-card:hover::before {
-            background: rgba(26,35,126,0.25);
-        }
-
-    .profile-img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border: 3px solid #1a237e;
-        border-radius: 50%;
-        margin-bottom: 12px;
-        box-shadow: 0 0 6px rgba(26,35,126,0.3);
-    }
-
-    .member-name {
-        font-weight: 800;
-        font-size: 1rem;
-        margin-bottom: 2px;
-        color: #1a237e;
-    }
-
-    .position-badge {
-        display: inline-block;
-        padding: 3px 10px;
-        background: #e8eaf6;
-        color: #1a237e;
-        border-radius: 20px;
-        font-size: .75rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-    }
-
-</style>
-
-
-<div class="container my-5">
-
-    <!-- HEADER -->
-    <div class="committee-header">
-        <h2><i class="fa-solid fa-users-gear"></i> Committee Members</h2>
-        <div class="header-subtitle">
-            Meet the leadership and executive team of Conscious Student Society
-        </div>
-    </div>
-
-
-    <!-- TOP BAR -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-
-        <!-- Search -->
-        <input id="searchInput"
-               type="text"
-               placeholder="Search members..."
-               class="form-control search-bar shadow-sm" />
-
-        <!-- Filters -->
-        <div class="text-center mt-3 mt-md-0">
-            <a asp-action="Index" asp-route-category="" class="btn btn-outline-primary filter-btn">All</a>
-            <a asp-action="Index" asp-route-category="Top" class="btn btn-outline-primary filter-btn">Top-Level</a>
-            <a asp-action="Index" asp-route-category="Executive" class="btn btn-outline-primary filter-btn">Executive</a>
-            <a asp-action="Index" asp-route-category="Members" class="btn btn-outline-primary filter-btn">Members</a>
-        </div>
-
-    </div>
-
-
-    <!-- CARDS GRID -->
-    <div class="row g-4" id="committeeGrid">
-
-        @foreach (var m in Model)
-        {
-            <div class="col-6 col-lg-3 committee-item">
-
-                <div class="card committee-card shadow-sm text-center">
-
-                    <img src="@m.ProfileImagePath"
-                         class="profile-img"
-                         alt="Profile Image" />
-
-                    <h5 class="member-name">@m.FullName</h5>
-
-                    <div class="position-badge">@m.CommitteePosition</div>
-
-                    <a asp-controller="Profile"
-                       asp-action="View"
-                       asp-route-id="@m.Id"
-                       class="btn btn-sm btn-primary">
-                        View Profile
-                    </a>
-
+<!-- HERO -->
+<section class="committee-hero">
+    <div class="container committee-hero-inner">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <div class="committee-breadcrumb">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <span>Committee</span>
                 </div>
-
+                <h1 class="committee-hero-title">Executive Committee Directory</h1>
+                <p class="committee-hero-sub">
+                    সচেতন ছাত্র সমাজ (Conscious Student Society)-এর দায়িত্বশীল নেতৃত্ব ও কার্যনির্বাহী সদস্যবৃন্দ।
+                </p>
             </div>
-        }
+            <div class="col-lg-4 text-lg-end">
+                <div class="committee-summary-pill">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <div class="text-start">
+                        <div class="committee-summary-num">@totalCount</div>
+                        <div class="committee-summary-label">মোট কমিটি সদস্য</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
+<div class="container pb-5">
+
+    <!-- SEARCH & FILTER TOOLBAR -->
+    <div class="committee-toolbar mb-4">
+        <div class="committee-search-wrap">
+            <i class="fa-solid fa-magnifying-glass committee-search-icon"></i>
+            <input id="searchInput"
+                   type="search"
+                   value="@ViewBag.Search"
+                   placeholder="নাম বা পদবি দিয়ে খুঁজুন..."
+                   class="committee-search-input"
+                   aria-label="Search committee members" />
+        </div>
+
+        <div class="committee-filters">
+            <a asp-action="Index" asp-route-category=""
+               class="committee-filter-pill @(string.IsNullOrEmpty(selectedCategory) ? "is-active" : "")">
+                <span>All</span>
+                <span class="committee-count-tag">@totalCount</span>
+            </a>
+            <a asp-action="Index" asp-route-category="Top"
+               class="committee-filter-pill @(selectedCategory == "Top" ? "is-active" : "")">
+                <span>Top-Level</span>
+                <span class="committee-count-tag">@topCount</span>
+            </a>
+            <a asp-action="Index" asp-route-category="Executive"
+               class="committee-filter-pill @(selectedCategory == "Executive" ? "is-active" : "")">
+                <span>Executive</span>
+                <span class="committee-count-tag">@execCount</span>
+            </a>
+            <a asp-action="Index" asp-route-category="Members"
+               class="committee-filter-pill @(selectedCategory == "Members" ? "is-active" : "")">
+                <span>Members</span>
+                <span class="committee-count-tag">@generalCount</span>
+            </a>
+        </div>
     </div>
 
+    <!-- MEMBERS GRID -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4" id="committeeGrid">
+            @foreach (var m in Model)
+            {
+                var initial = !string.IsNullOrWhiteSpace(m.FullName)
+                    ? m.FullName.Substring(0, 1).ToUpperInvariant()
+                    : "C";
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 committee-item">
+                    <div class="committee-card @(m.IsTopLevel ? "is-top-leader" : "")">
+
+                        <div class="committee-avatar-wrap">
+                            @if (!string.IsNullOrEmpty(m.ProfileImageSrc))
+                            {
+                                <img src="@m.ProfileImageSrc"
+                                     class="committee-avatar"
+                                     alt="@m.FullName"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                <div class="committee-avatar-fallback" style="display:none;">@initial</div>
+                            }
+                            else
+                            {
+                                <div class="committee-avatar-fallback">@initial</div>
+                            }
+                        </div>
+
+                        <h5 class="committee-name">@m.FullName</h5>
+
+                        @if (!string.IsNullOrWhiteSpace(m.FullNameBn))
+                        {
+                            <p class="committee-name-bn">@m.FullNameBn</p>
+                        }
+
+                        <div class="committee-role-badge">@m.CommitteePosition</div>
+
+                        @if (!string.IsNullOrWhiteSpace(m.District) || !string.IsNullOrWhiteSpace(m.BloodGroup))
+                        {
+                            <div class="committee-meta">
+                                @if (!string.IsNullOrWhiteSpace(m.District))
+                                {
+                                    <span class="committee-meta-tag">
+                                        <i class="fa-solid fa-location-dot"></i> @m.District
+                                    </span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(m.BloodGroup))
+                                {
+                                    <span class="committee-meta-tag text-danger fw-semibold">
+                                        <i class="fa-solid fa-droplet"></i> @m.BloodGroup
+                                    </span>
+                                }
+                            </div>
+                        }
+
+                        <a asp-controller="Profile"
+                           asp-action="View"
+                           asp-route-id="@m.Id"
+                           class="committee-profile-btn">
+                            <span>View Profile</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div id="noSearchResults" class="committee-empty mt-3 d-none">
+            <i class="fa-solid fa-user-slash d-block"></i>
+            <h6 class="fw-bold text-dark mb-1">কোনো সদস্য পাওয়া যায়নি</h6>
+            <p class="small mb-0">অন্য নাম বা পদবি লিখে আবার চেষ্টা করুন।</p>
+        </div>
+    }
+    else
+    {
+        <div class="committee-empty">
+            <i class="fa-solid fa-users-slash d-block"></i>
+            <h6 class="fw-bold text-dark mb-1">এই ক্যাটাগরিতে এখনো কোনো কমিটি সদস্য যুক্ত করা হয়নি</h6>
+            <p class="small mb-0">অ্যাডমিন প্যানেল থেকে সদস্যের Member Type হিসেবে <strong>Committee</strong> সেট করলে এখানে দেখা যাবে।</p>
+        </div>
+    }
 
 </div>
 
+@section Scripts {
+    <script>
+        (function () {
+            const searchInput = document.getElementById("searchInput");
+            const cards = document.querySelectorAll(".committee-item");
+            const noResults = document.getElementById("noSearchResults");
+            if (!searchInput || !cards.length) return;
 
-<!-- LIVE SEARCH SCRIPT -->
-<script>
-    const searchInput = document.getElementById("searchInput");
+            function filterCards() {
+                const query = searchInput.value.trim().toLowerCase();
+                let visibleCount = 0;
 
-    searchInput.addEventListener("keyup", function () {
-        const query = this.value.toLowerCase();
-        const cards = document.querySelectorAll(".committee-item");
+                cards.forEach(card => {
+                    const text = card.innerText.toLowerCase();
+                    const match = text.includes(query);
+                    card.style.display = match ? "" : "none";
+                    if (match) visibleCount++;
+                });
 
-        cards.forEach(card => {
-            const text = card.innerText.toLowerCase();
-            card.style.display = text.includes(query) ? "block" : "none";
-        });
-    });
-</script>
+                if (noResults) {
+                    noResults.classList.toggle("d-none", visibleCount > 0);
+                }
+            }
+
+            searchInput.addEventListener("input", filterCards);
+        })();
+    </script>
+}

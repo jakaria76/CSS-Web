@@ -1,121 +1,164 @@
-﻿@model CSS.ViewModels.EventDetailsVM
+﻿@using System.Globalization
+@model CSS.ViewModels.EventDetailsVM
 @{
     ViewData["Title"] = Model.Event.Title;
+
+    string bannerImg = (Model.Event.BannerImage != null && Model.Event.BannerImage.Length > 0)
+        ? $"data:{(string.IsNullOrWhiteSpace(Model.Event.BannerImageType) ? "image/jpeg" : Model.Event.BannerImageType)};base64,{Convert.ToBase64String(Model.Event.BannerImage)}"
+        : Url.Content("~/images/slider/slide1.jpg");
+
+    var tags = (Model.Event.Tag ?? "")
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+        .Select(t => t.Trim())
+        .ToList();
 }
 
-<link rel="stylesheet" href="~/css/events.css" />
+<link rel="stylesheet" href="~/css/events.css" asp-append-version="true" />
 
-<div class="container my-4">
-    <div class="row">
+<div class="container py-4 pb-5">
+
+    <!-- GLOBAL MESSAGES -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger fw-semibold rounded-3 shadow-sm mb-3">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
+        </div>
+    }
+
+    @if (TempData["Registered"] != null)
+    {
+        <div class="alert alert-success fw-semibold rounded-3 shadow-sm mb-3">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["Registered"]
+        </div>
+    }
+
+    @if (Context.Request.Query["paid"] == "true")
+    {
+        <div class="alert alert-success fw-semibold rounded-3 shadow-sm mb-3">
+            <i class="fa-solid fa-circle-check me-2"></i>Payment Successful! Your registration has been completed.
+        </div>
+    }
+
+    <div class="row g-4">
 
         <!-- LEFT COLUMN -->
         <div class="col-lg-8">
 
-            <!-- GLOBAL MESSAGES -->
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger fw-bold">@TempData["Error"]</div>
-            }
-
-            @if (TempData["Registered"] != null)
-            {
-                <div class="alert alert-success fw-bold">@TempData["Registered"]</div>
-            }
-
-            @if (Context.Request.Query["paid"] == "true")
-            {
-                <div class="alert alert-success fw-bold">✔ Payment Successful! Your registration has been completed.</div>
-            }
-
             <!-- EVENT BANNER -->
-            @{
-                string bannerImg = Model.Event.BannerImage != null && Model.Event.BannerImage.Length > 0
-                ? $"data:{Model.Event.BannerImageType};base64,{Convert.ToBase64String(Model.Event.BannerImage)}"
-                : Url.Content("~/images/default-event.jpg");
-            }
-
-            <div class="event-banner" style="background-image:url('@bannerImg')">
-                <div class="event-banner-content">
-                    <h1 class="fw-bold">@Model.Event.Title</h1>
-
-                    @if (!string.IsNullOrWhiteSpace(Model.Event.ShortDescription))
-                    {
-                        <p class="lead">@Model.Event.ShortDescription</p>
-                    }
-
-                    <div class="text-light fw-semibold">
-                        @Model.Event.StartDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
-                        @if (Model.Event.EndDateTime.HasValue)
-                        {
-                            <span>– @Model.Event.EndDateTime.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</span>
-                        }
-                    </div>
-
-                    <!-- PRICE -->
-                    <div class="mt-2 fw-bold fs-4 text-warning">
+            <div class="event-detail-banner mb-4" style="background-image:url('@bannerImg')">
+                <div class="event-detail-banner-inner">
+                    <div class="d-flex flex-wrap gap-2 mb-2">
                         @if (Model.Event.Price > 0)
                         {
-                            <span>Event Fee: ৳ @Model.Event.Price</span>
+                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">
+                                <i class="fa-solid fa-ticket me-1"></i> Event Fee: ৳ @Model.Event.Price
+                            </span>
                         }
                         else
                         {
-                            <span class="text-success">Free Event</span>
+                            <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color:#166534;color:#fff;">
+                                <i class="fa-solid fa-gift me-1"></i> Free Event
+                            </span>
+                        }
+
+                        @foreach (var tag in tags)
+                        {
+                            <span class="event-meta-pill">@tag</span>
                         }
                     </div>
 
-                    <div id="countdown" class="mt-2 text-warning fw-bold fs-5"></div>
+                    <h1 class="event-detail-title">@Model.Event.Title</h1>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Event.ShortDescription))
+                    {
+                        <p class="mb-3 opacity-90" style="max-width:650px;">@Model.Event.ShortDescription</p>
+                    }
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="event-meta-pill">
+                            <i class="fa-regular fa-calendar"></i>
+                            @(Model.Event.StartDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") ?? "Date TBA")
+                            @if (Model.Event.EndDateTime.HasValue)
+                            {
+                                <span>– @Model.Event.EndDateTime.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</span>
+                            }
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(Model.Event.Venue))
+                        {
+                            <span class="event-meta-pill">
+                                <i class="fa-solid fa-location-dot"></i> @Model.Event.Venue
+                            </span>
+                        }
+                    </div>
                 </div>
             </div>
 
-            <!-- ABOUT -->
-            <div class="mt-4">
-                <h4 class="fw-bold">About This Event</h4>
-                <div class="event-description">
-                    @Html.Raw(Model.Event.FullDescription)
-                </div>
+            <!-- ABOUT THIS EVENT -->
+            <div class="event-panel-card mb-4">
+                <h4 class="event-panel-title">
+                    <i class="fa-solid fa-align-left"></i>
+                    <span>About This Event</span>
+                </h4>
+                @if (!string.IsNullOrWhiteSpace(Model.Event.FullDescription))
+                {
+                    <div class="event-description text-secondary" style="line-height:1.8;">
+                        @Html.Raw(Model.Event.FullDescription)
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Detailed description will be updated soon.</p>
+                }
             </div>
 
             <!-- GALLERY -->
-            <div class="mt-4">
-                <h5 class="fw-bold">Gallery</h5>
-                <div class="d-flex flex-wrap gap-2">
-                    @if (Model.Images != null && Model.Images.Any())
-                    {
-                        foreach (var img in Model.Images)
+            <div class="event-panel-card mb-4">
+                <h5 class="event-panel-title">
+                    <i class="fa-regular fa-images"></i>
+                    <span>Event Gallery</span>
+                </h5>
+
+                @if (Model.Images != null && Model.Images.Any())
+                {
+                    <div class="event-gallery-grid">
+                        @foreach (var img in Model.Images)
                         {
-                            var src = $"data:{img.ImageType};base64,{Convert.ToBase64String(img.ImageData)}";
-                            <img src="@src" style="height:120px;width:160px;object-fit:cover;" class="rounded shadow-sm" />
+                            var src = $"data:{(string.IsNullOrWhiteSpace(img.ImageType) ? "image/jpeg" : img.ImageType)};base64,{Convert.ToBase64String(img.ImageData)}";
+                            <img src="@src" class="event-gallery-thumb" alt="@Model.Event.Title Gallery" />
                         }
-                    }
-                    else
-                    {
-                        <p class="text-muted">No gallery images available.</p>
-                    }
-                </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted small mb-0">No gallery images available for this event.</p>
+                }
             </div>
 
-            <!-- ADMIN TABLE -->
+            <!-- ADMIN PARTICIPANTS TABLE -->
             @if (User.IsInRole("Admin"))
             {
-                <div class="card p-3 shadow-sm mt-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="fw-bold">Registered Participants (@Model.RegisteredCount)</h5>
+                <div class="event-panel-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <h5 class="event-panel-title mb-0">
+                            <i class="fa-solid fa-users"></i>
+                            <span>Registered Participants (@Model.RegisteredCount)</span>
+                        </h5>
 
                         <a asp-action="ExportRegistrationsExcel"
                            asp-route-id="@Model.Event.Id"
-                           class="btn btn-success btn-sm">
-                            <i class="fa-solid fa-file-excel"></i> Download Excel
+                           class="btn btn-success btn-sm rounded-3 fw-semibold">
+                            <i class="fa-solid fa-file-excel me-1"></i> Download Excel
                         </a>
                     </div>
 
                     @if (Model.Event.Registrations?.Any() == true)
                     {
-                        <div style="max-height:420px; overflow-y:auto;">
-                            <table class="table table-bordered table-striped">
-                                <thead class="table-dark">
+                        <div class="table-responsive" style="max-height:420px; overflow-y:auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
                                     <tr>
                                         <th>#</th>
-                                        <th>Image</th>
+                                        <th>Photo</th>
                                         <th>Name</th>
                                         <th>Mobile</th>
                                         <th>Email</th>
@@ -130,26 +173,37 @@
                                         int i = 1;
                                         foreach (var r in Model.Event.Registrations.OrderBy(r => r.RegisteredAt))
                                         {
+                                            var initial = !string.IsNullOrWhiteSpace(r.FullName) ? r.FullName.Substring(0, 1).ToUpperInvariant() : "U";
                                             <tr>
                                                 <td>@i</td>
                                                 <td>
-                                                    @if (r.UserImage != null)
+                                                    @if (r.UserImage != null && r.UserImage.Length > 0)
                                                     {
-                                                        var imgSrc = $"data:{r.UserImageType};base64,{Convert.ToBase64String(r.UserImage)}";
-                                                        <img src="@imgSrc" style="height:45px;width:45px;border-radius:6px;object-fit:cover;" />
+                                                        var imgSrc = $"data:{(string.IsNullOrWhiteSpace(r.UserImageType) ? "image/jpeg" : r.UserImageType)};base64,{Convert.ToBase64String(r.UserImage)}";
+                                                        <img src="@imgSrc" style="height:40px;width:40px;border-radius:10px;object-fit:cover;" alt="@r.FullName" />
                                                     }
                                                     else
                                                     {
-                                                        <img src="/images/default-user.png" style="height:45px;width:45px;border-radius:6px;" />
+                                                        <div class="d-inline-flex align-items-center justify-content-center fw-bold text-danger bg-danger-subtle"
+                                                             style="height:40px;width:40px;border-radius:10px;">@initial</div>
                                                     }
                                                 </td>
-                                                <td>@r.FullName</td>
+                                                <td class="fw-semibold">@r.FullName</td>
                                                 <td>@r.Mobile</td>
                                                 <td>@r.Email</td>
                                                 <td>@r.InstituteName</td>
-                                                <td>@(r.WillVolunteer ? "Yes" : "No")</td>
-                                                <td>@r.PaymentMethod</td>
-                                                <td>@r.RegisteredAt.ToLocalTime().ToString("dd MMM yyyy - hh:mm tt")</td>
+                                                <td>
+                                                    @if (r.WillVolunteer)
+                                                    {
+                                                        <span class="badge bg-success-subtle text-success">Yes</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-light text-muted">No</span>
+                                                    }
+                                                </td>
+                                                <td><span class="badge bg-secondary-subtle text-dark">@r.PaymentMethod</span></td>
+                                                <td class="small text-muted">@r.RegisteredAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</td>
                                             </tr>
                                             i++;
                                         }
@@ -160,92 +214,145 @@
                     }
                     else
                     {
-                        <p class="text-muted">No registrations yet.</p>
+                        <p class="text-muted small mb-0">No registrations yet.</p>
                     }
                 </div>
             }
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <!-- RIGHT COLUMN -->
+        <!-- RIGHT SIDEBAR -->
         <div class="col-lg-4">
 
-            <div class="card p-3 shadow-sm mb-3">
-                <h5 class="fw-bold mb-3">Event Information</h5>
+            <!-- EVENT INFO + COUNTDOWN + MAP -->
+            <div class="event-panel-card mb-4">
+                <h5 class="event-panel-title">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Event Information</span>
+                </h5>
 
-                <p><strong>Venue:</strong> @Model.Event.Venue</p>
+                <div class="event-info-row">
+                    <span class="event-info-icon"><i class="fa-solid fa-location-dot"></i></span>
+                    <div>
+                        <div class="small text-muted fw-semibold">Venue</div>
+                        <div class="fw-semibold text-dark">@(string.IsNullOrWhiteSpace(Model.Event.Venue) ? "TBA" : Model.Event.Venue)</div>
+                    </div>
+                </div>
 
-                <p><strong>Registered:</strong> @Model.RegisteredCount</p>
+                <div class="event-info-row">
+                    <span class="event-info-icon"><i class="fa-solid fa-users"></i></span>
+                    <div>
+                        <div class="small text-muted fw-semibold">Registered Participants</div>
+                        <div class="fw-semibold text-dark">@Model.RegisteredCount</div>
+                    </div>
+                </div>
 
-                <p>
-                    <strong>Start:</strong>
-                    @Model.Event.StartDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
-                </p>
+                <div class="event-info-row">
+                    <span class="event-info-icon"><i class="fa-regular fa-clock"></i></span>
+                    <div>
+                        <div class="small text-muted fw-semibold">Schedule</div>
+                        <div class="fw-semibold text-dark small">
+                            Start: @(Model.Event.StartDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") ?? "TBA")
+                            @if (Model.Event.EndDateTime != null)
+                            {
+                                <br />
+                                <span>End: @Model.Event.EndDateTime.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</span>
+                            }
+                        </div>
+                    </div>
+                </div>
 
-                @if (Model.Event.EndDateTime != null)
+                @if (!string.IsNullOrWhiteSpace(Model.Event.ContactPerson) || !string.IsNullOrWhiteSpace(Model.Event.ContactPhone))
                 {
-                    <p>
-                        <strong>End:</strong>
-                        @Model.Event.EndDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
-                    </p>
+                    <div class="event-info-row">
+                        <span class="event-info-icon"><i class="fa-solid fa-phone"></i></span>
+                        <div>
+                            <div class="small text-muted fw-semibold">Contact</div>
+                            <div class="fw-semibold text-dark small">@Model.Event.ContactPerson @Model.Event.ContactPhone</div>
+                        </div>
+                    </div>
                 }
 
                 <!-- COUNTDOWN -->
-                <div class="mt-3">
-                    <h6 class="fw-bold">Countdown</h6>
-                    <div id="countdownBox" class="p-2 border rounded bg-light">
-                        <span id="days" class="fw-bold fs-5 text-primary">0</span> Days
-                        <span id="hours" class="fw-bold fs-5 text-success">0</span> Hours
-                        <span id="minutes" class="fw-bold fs-5 text-warning">0</span> Min
-                        <span id="seconds" class="fw-bold fs-5 text-danger">0</span> Sec
+                <div class="mt-3 pt-2 border-top">
+                    <div class="small fw-bold text-muted mb-2 text-uppercase" style="letter-spacing:0.5px;">Countdown</div>
+                    <div id="countdownBox" class="countdown-grid">
+                        <div class="countdown-tile">
+                            <span id="days" class="countdown-num">00</span>
+                            <span class="countdown-lbl">Days</span>
+                        </div>
+                        <div class="countdown-tile">
+                            <span id="hours" class="countdown-num">00</span>
+                            <span class="countdown-lbl">Hours</span>
+                        </div>
+                        <div class="countdown-tile">
+                            <span id="minutes" class="countdown-num">00</span>
+                            <span class="countdown-lbl">Min</span>
+                        </div>
+                        <div class="countdown-tile">
+                            <span id="seconds" class="countdown-num">00</span>
+                            <span class="countdown-lbl">Sec</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- MAP -->
-                <div id="mapDetail" style="height:220px;border-radius:8px;" class="mt-3"></div>
+                <div id="mapDetail" class="mt-3 rounded-3 overflow-hidden border" style="height:220px;"></div>
             </div>
 
-            <div class="card p-3 shadow-sm">
-                <h5 class="fw-bold mb-3">Register Now</h5>
+            <!-- REGISTRATION FORM -->
+            <div class="event-panel-card">
+                <h5 class="event-panel-title">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Register Now</span>
+                </h5>
                 @await Html.PartialAsync("_RegistrationForm", Model.Event)
             </div>
 
         </div>
-
     </div>
 </div>
 
 @section Scripts {
-
-    <script src="~/js/events.js"></script>
-    <script src="~/js/registration.js"></script>
+    <script src="~/js/events.js" asp-append-version="true"></script>
+    <script src="~/js/registration.js" asp-append-version="true"></script>
 
     <!-- COUNTDOWN SCRIPT -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const startIso = "@(Model.Event.StartDateTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss") ?? "")";
+            const box = document.getElementById("countdownBox");
+            if (!box) return;
 
-            // Convert C# DateTime → JS Date
-            var startTime = new Date("@Model.Event.StartDateTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss")").getTime();
+            if (!startIso) {
+                box.className = "p-3 rounded-3 bg-light text-center small fw-semibold text-muted";
+                box.innerText = "Event date to be announced";
+                return;
+            }
+
+            const startTime = new Date(startIso).getTime();
+            if (isNaN(startTime)) return;
+
+            function pad(n) { return n < 10 ? "0" + n : n; }
 
             function updateCountdown() {
-                var now = new Date().getTime();
-                var distance = startTime - now;
-
+                const distance = startTime - Date.now();
                 if (distance <= 0) {
-                    document.getElementById("countdownBox").innerHTML =
-                        "<span class='text-danger fw-bold'>Event has started!</span>";
+                    box.className = "p-3 rounded-3 text-center fw-bold small";
+                    box.style.background = "#F0FDF4";
+                    box.style.color = "#15803D";
+                    box.innerHTML = '<i class="fa-solid fa-flag-checkered me-1"></i> Event has started!';
                     return;
                 }
 
-                var d = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var s = Math.floor((distance % (1000 * 60)) / 1000);
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
 
-                document.getElementById("days").innerText = d;
-                document.getElementById("hours").innerText = h;
-                document.getElementById("minutes").innerText = m;
-                document.getElementById("seconds").innerText = s;
+                document.getElementById("days").innerText = pad(d);
+                document.getElementById("hours").innerText = pad(h);
+                document.getElementById("minutes").innerText = pad(m);
+                document.getElementById("seconds").innerText = pad(s);
             }
 
             updateCountdown();
@@ -256,26 +363,22 @@
     <!-- GOOGLE MAP -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const lat = "@(Model.Event.Latitude?.ToString(CultureInfo.InvariantCulture) ?? "")";
+            const lng = "@(Model.Event.Longitude?.ToString(CultureInfo.InvariantCulture) ?? "")";
+            const mapEl = document.getElementById("mapDetail");
+            if (!mapEl) return;
 
-            var lat = "@Model.Event.Latitude";
-            var lng = "@Model.Event.Longitude";
-
-            if (!lat || !lng || lat === "null" || lng === "null") {
-                document.getElementById("mapDetail").innerHTML =
-                    "<div class='text-muted text-center p-3'>Location not set</div>";
+            if (!lat || !lng) {
+                mapEl.innerHTML = "<div class='h-100 d-flex align-items-center justify-content-center bg-light text-muted small'>Location map not provided</div>";
                 return;
             }
 
-            var mapFrame = `
-                <iframe width="100%" height="220" style="border:0;border-radius:8px;"
+            mapEl.innerHTML = `
+                <iframe width="100%" height="220" style="border:0;"
                         loading="lazy" allowfullscreen
                         referrerpolicy="no-referrer-when-downgrade"
-                        src="https://www.google.com/maps?q=${lat},${lng}&z=16&output=embed">
+                        src="https://www.google.com/maps?q=${encodeURIComponent(lat)},${encodeURIComponent(lng)}&z=16&output=embed">
                 </iframe>`;
-
-            document.getElementById("mapDetail").innerHTML = mapFrame;
-
         });
     </script>
 }
-

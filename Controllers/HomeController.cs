@@ -1,7 +1,7 @@
 using CSS.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using CSS.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CSS.Controllers
 {
@@ -16,48 +16,51 @@ namespace CSS.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
+            if (page < 1) page = 1;
             int pageSize = 5;
 
             // ===================== NOTICE PAGINATION =====================
             var totalNotices = await _db.Notices.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalNotices / (double)pageSize);
+            var totalPages = Math.Max(1, (int)Math.Ceiling(totalNotices / (double)pageSize));
+            if (page > totalPages) page = totalPages;
 
             var notices = await _db.Notices
                 .OrderByDescending(n => n.PublishDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync();
-
 
             // ===================== UPCOMING EVENTS =====================
             var upcomingEvents = await _db.Events
                 .Where(e => e.StartDateTime != null
                          && e.StartDateTime > DateTime.Now
-                         && e.IsPublished == true)
+                         && e.IsPublished)
                 .OrderBy(e => e.StartDateTime)
                 .Take(4)
+                .AsNoTracking()
                 .ToListAsync();
-
-            ViewBag.UpcomingEvents = upcomingEvents;
-
 
             // ===================== LATEST / SORTED VIDEOS =====================
             var videos = await _db.Videos
-                .OrderBy(v => v.SortOrder)            // Admin-defined sorting
-                .ThenByDescending(v => v.CreatedAt)   // Latest first
+                .OrderBy(v => v.SortOrder)
+                .ThenByDescending(v => v.CreatedAt)
                 .Take(6)
-                .ToListAsync();                       // IMPORTANT: No Select()
+                .AsNoTracking()
+                .ToListAsync();
 
+            // ===================== LIVE STATS =====================
+            ViewBag.TotalMembers = await _db.Users.CountAsync();
+            ViewBag.EligibleDonors = await _db.Users.CountAsync(u =>
+                u.BloodGroup != null && u.DonationEligibility == "Eligible");
+            ViewBag.TotalEvents = await _db.Events.CountAsync(e => e.IsPublished);
+            ViewBag.TotalNotices = totalNotices;
 
-            ViewBag.VideoList = videos;  // Now this contains List<Video>
-
-
-            // ===================== NOTICE PAGINATION VIEWBAG =====================
+            ViewBag.UpcomingEvents = upcomingEvents;
+            ViewBag.VideoList = videos;
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
 
-
-            // RETURN VIEW
             return View(notices);
         }
 

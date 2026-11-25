@@ -1,5 +1,4 @@
 ﻿using CSS.Data;
-using CSS.Models;
 using CSS.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +8,7 @@ namespace CSS.Controllers
     public class BloodController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private static readonly string[] BloodGroups = { "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-" };
 
         public BloodController(ApplicationDbContext context)
         {
@@ -20,17 +20,22 @@ namespace CSS.Controllers
         // ================================================
         public async Task<IActionResult> Index()
         {
-            var bloodGroups = new[] { "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-" };
+            var users = await _context.Users
+                .Where(u => u.BloodGroup != null)
+                .Select(u => new { u.BloodGroup, u.DonationEligibility })
+                .AsNoTracking()
+                .ToListAsync();
 
-            var users = await _context.Users.AsNoTracking().ToListAsync();
-
-            var model = bloodGroups.Select(bg => new BloodGroupVM
+            var model = BloodGroups.Select(bg => new BloodGroupVM
             {
                 BloodGroup = bg,
                 Total = users.Count(u => u.BloodGroup == bg),
                 Available = users.Count(u => u.BloodGroup == bg && u.DonationEligibility == "Eligible"),
                 NotAvailable = users.Count(u => u.BloodGroup == bg && u.DonationEligibility != "Eligible")
             }).ToList();
+
+            ViewBag.TotalDonors = model.Sum(x => x.Total);
+            ViewBag.TotalAvailable = model.Sum(x => x.Available);
 
             return View(model);
         }
@@ -39,9 +44,13 @@ namespace CSS.Controllers
         // FIND — GET (User selects blood group + picks map)
         // ================================================
         [HttpGet]
-        public IActionResult Find(string group)
+        public IActionResult Find(string? group)
         {
+            if (string.IsNullOrWhiteSpace(group) || !BloodGroups.Contains(group))
+                group = "A+";
+
             ViewBag.Group = group;
+            ViewBag.AllGroups = BloodGroups;
             return View();
         }
 
@@ -49,14 +58,18 @@ namespace CSS.Controllers
         // FIND — POST (Find ALL donors sorted by nearest)
         // ================================================
         [HttpPost]
-        public IActionResult Find(string group, double lat, double lng)
+        public async Task<IActionResult> Find(string group, double lat, double lng)
         {
-            var donors = _context.Users
-                        .Where(x => x.BloodGroup == group &&
-                                    x.Latitude != null &&
-                                    x.Longitude != null &&
-                                    x.DonationEligibility == "Eligible")
-                        .ToList();
+            if (string.IsNullOrWhiteSpace(group) || !BloodGroups.Contains(group))
+                group = "A+";
+
+            var donors = await _context.Users
+                .Where(x => x.BloodGroup == group &&
+                            x.Latitude != null &&
+                            x.Longitude != null &&
+                            x.DonationEligibility == "Eligible")
+                .AsNoTracking()
+                .ToListAsync();
 
             var nearest = donors
                 .Select(d => new DonorWithDistance
@@ -64,8 +77,8 @@ namespace CSS.Controllers
                     User = d,
                     DistanceKm = Haversine(lat, lng, d.Latitude!.Value, d.Longitude!.Value)
                 })
-                .OrderBy(d => d.DistanceKm) // nearest first
-                .ToList(); // IMPORTANT: all donors (no limit)
+                .OrderBy(d => d.DistanceKm)
+                .ToList();
 
             ViewBag.UserLatitude = lat;
             ViewBag.UserLongitude = lng;
@@ -112,12 +125,9 @@ namespace CSS.Controllers
             return Json(result);
         }
 
-        // ================================================
-        // HAVERSINE — Calculate distance between 2 points
-        // ================================================
         private static double Haversine(double lat1, double lon1, double lat2, double lon2)
         {
-            const double R = 6371.0; // km
+            const double R = 6371.0;
 
             var dLat = ToRad(lat2 - lat1);
             var dLon = ToRad(lon2 - lon1);

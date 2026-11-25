@@ -1,0 +1,325 @@
+/* ============================================================
+   NOTICE BOARD PAGES — shadcn/ui Zinc + Emerald Green
+   ============================================================ */
+
+.notice-hero {
+    background: var(--surface-subtle);
+    border-bottom: 1px solid var(--border);
+    padding: 2.75rem 0 2.25rem;
+    position: relative;
+    overflow: hidden;
+    color: var(--foreground);
+}
+
+.notice-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(9, 9, 11, 0.07) 1px, transparent 1px);
+    background-size: 22px 22px;
+    pointer-events: none;
+}
+
+.notice-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--background);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.notice-breadcrumb a {
+    color: var(--foreground);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.notice-breadcrumb a:hover {
+    color: var(--css-primary);
+}
+
+.notice-hero-title {
+    font-weight: 800;
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    letter-spacing: -0.03em;
+    color: var(--foreground);
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.notice-hero-sub {
+    color: var(--muted-foreground);
+    font-size: 0.98rem;
+    max-width: 600px;
+    margin-bottom: 0;
+    position: relative;
+}
+
+.notice-kpi-pill {
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.65rem 1.15rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--foreground);
+    box-shadow: var(--shadow-xs);
+    position: relative;
+}
+
+.notice-kpi-pill i {
+    color: var(--css-primary);
+    font-size: 1.15rem;
+}
+
+/* Search Toolbar */
+.notice-toolbar {
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow-xs);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.notice-search-wrap {
+    position: relative;
+    flex: 1 1 280px;
+    max-width: 440px;
+}
+
+.notice-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.notice-search-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px 0 36px;
+    border-radius: var(--radius);
+    border: 1px solid var(--input-border);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.notice-search-input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--ring);
+}
+
+/* Notice Board Card & Table */
+.notice-board-card {
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-xs);
+}
+
+.notice-board-topbar {
+    background: var(--surface-subtle);
+    border-bottom: 1px solid var(--border);
+    padding: 0.9rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.notice-board-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.notice-board-table thead th {
+    background: var(--surface-subtle);
+    color: var(--muted-foreground);
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.8rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.notice-board-table tbody td {
+    padding: 0.95rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 0.92rem;
+}
+
+.notice-board-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.notice-board-table tbody tr:hover {
+    background: var(--surface-subtle);
+}
+
+.notice-sl-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    border-radius: var(--radius);
+    background: var(--muted);
+    color: var(--foreground);
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.notice-title-link {
+    color: var(--foreground);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.15s ease;
+}
+
+.notice-title-link i {
+    color: var(--css-primary);
+    font-size: 0.98rem;
+    flex-shrink: 0;
+}
+
+.notice-title-link:hover {
+    color: var(--css-primary);
+}
+
+.notice-date-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.notice-pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 5px 12px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.notice-pdf-btn:hover {
+    background: var(--css-primary);
+    border-color: var(--css-primary);
+    color: #ffffff;
+}
+
+/* Admin Create/Edit Card */
+.notice-form-card {
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-xs);
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.notice-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+.notice-input {
+    border-radius: var(--radius);
+    border: 1px solid var(--input-border);
+    background: var(--background);
+    color: var(--foreground);
+    padding: 0.55rem 0.85rem;
+    font-size: 0.9rem;
+}
+
+.notice-input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--ring);
+    outline: none;
+}
+
+.notice-pdf-drop {
+    border: 1.5px dashed var(--input-border);
+    border-radius: var(--radius-lg);
+    background: var(--surface-subtle);
+    padding: 1.35rem;
+    text-align: center;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.notice-pdf-drop:hover {
+    border-color: var(--css-primary);
+    background: var(--css-primary-light);
+}
+
+.notice-empty {
+    padding: 3.25rem 1.5rem;
+    text-align: center;
+    color: var(--muted-foreground);
+}
+
+.notice-empty i {
+    font-size: 2.2rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.65rem;
+}
+
+@media (max-width: 767px) {
+    .notice-hero {
+        padding: 2rem 0 1.75rem;
+    }
+    .notice-toolbar {
+        padding: 0.9rem 1rem;
+    }
+    .notice-board-table thead th,
+    .notice-board-table tbody td {
+        padding: 0.75rem 0.9rem;
+    }
+    .notice-form-card {
+        padding: 1.35rem;
+    }
+}

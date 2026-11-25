@@ -1,9 +1,9 @@
 ﻿@model CSS.Models.Event
 
-@* Success message after FREE registration *@
 @if (TempData["Registered"] != null)
 {
-    <div id="regSuccessAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+    <div id="regSuccessAlert" class="alert alert-success alert-dismissible fade show rounded-3 small" role="alert">
+        <i class="fa-solid fa-circle-check me-1"></i>
         <strong>Success!</strong> @TempData["Registered"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -21,50 +21,75 @@
     <input type="hidden" name="eventId" value="@Model.Id" />
     <input type="hidden" id="payMethod" name="PaymentMethod" />
 
-    <input class="form-control mb-2" name="FullName" placeholder="Full Name" required />
-    <input class="form-control mb-2" name="Mobile" placeholder="Mobile Number" required />
-    <input class="form-control mb-2" name="Email" placeholder="Email (optional)" />
+    <div class="mb-2">
+        <label class="reg-label">Full Name <span class="text-danger">*</span></label>
+        <input class="form-control reg-input" name="FullName" placeholder="Enter your full name" required />
+    </div>
 
-    <select name="Gender" class="form-select mb-2">
-        <option value="">Gender</option>
-        <option>Male</option>
-        <option>Female</option>
-        <option>Other</option>
-    </select>
+    <div class="mb-2">
+        <label class="reg-label">Mobile Number <span class="text-danger">*</span></label>
+        <input class="form-control reg-input" name="Mobile" placeholder="01XXXXXXXXX" required />
+    </div>
 
-    <input class="form-control mb-2" name="InstituteName" placeholder="Institute Name" />
-    <input class="form-control mb-2" name="ClassName" placeholder="Class / Year" />
+    <div class="mb-2">
+        <label class="reg-label">Email <span class="text-muted fw-normal">(Optional)</span></label>
+        <input type="email" class="form-control reg-input" name="Email" placeholder="you@example.com" />
+    </div>
 
-    <textarea class="form-control mb-2" name="WhyJoin" rows="2" placeholder="Why join?"></textarea>
+    <div class="row g-2 mb-2">
+        <div class="col-6">
+            <label class="reg-label">Gender</label>
+            <select name="Gender" class="form-select reg-input">
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+        </div>
+        <div class="col-6">
+            <label class="reg-label">Class / Year</label>
+            <input class="form-control reg-input" name="ClassName" placeholder="e.g. HSC / 2nd Year" />
+        </div>
+    </div>
 
-    <div class="form-check mb-2">
-        <input class="form-check-input" type="checkbox" name="WillVolunteer" />
-        <label class="form-check-label">I want to volunteer</label>
+    <div class="mb-2">
+        <label class="reg-label">Institute Name</label>
+        <input class="form-control reg-input" name="InstituteName" placeholder="School / College / University" />
+    </div>
+
+    <div class="mb-2">
+        <label class="reg-label">Why do you want to join?</label>
+        <textarea class="form-control reg-input" name="WhyJoin" rows="2" placeholder="Write briefly..."></textarea>
+    </div>
+
+    <div class="form-check my-2">
+        <input class="form-check-input" type="checkbox" id="willVolunteerChk" name="WillVolunteer" value="true" />
+        <label class="form-check-label small fw-semibold text-dark" for="willVolunteerChk">
+            I want to serve as a volunteer
+        </label>
     </div>
 
     <div class="mb-3">
-        <label class="form-label fw-bold">Your Photo (optional)</label>
-        <input type="file" name="UserImage" class="form-control" />
+        <label class="reg-label">Your Photo <span class="text-muted fw-normal">(Optional)</span></label>
+        <input type="file" name="UserImage" class="form-control reg-input" accept="image/*" />
     </div>
 
     @if (Model.Price > 0)
     {
         <button type="button"
-                class="btn btn-danger w-100 fw-bold mb-2"
+                class="btn-css-primary w-100 py-2"
                 onclick="payNow()">
-            Pay with AamarPay For Register(৳ @Model.Price)
+            <i class="fa-solid fa-credit-card"></i>
+            <span>Pay &amp; Register (৳ @Model.Price)</span>
         </button>
     }
     else
     {
         <button type="submit"
                 onclick="document.getElementById('payMethod').value='Free';"
-                class="btn btn-success w-100 fw-bold">
-            Register Free
+                class="btn w-100 fw-bold py-2 text-white"
+                style="background:linear-gradient(135deg,#166534,#15803D);border-radius:10px;border:none;">
+            <i class="fa-solid fa-circle-check me-1"></i> Register Free
         </button>
     }
 </form>
-
-@section Scripts {
-    <script src="~/js/registration.js"></script>
-}

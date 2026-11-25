@@ -3,73 +3,84 @@
 @{
     string imgSrc = (Model.BannerImage != null && Model.BannerImage.Length > 0)
         ? $"data:{(string.IsNullOrWhiteSpace(Model.BannerImageType) ? "image/jpeg" : Model.BannerImageType)};base64,{Convert.ToBase64String(Model.BannerImage)}"
-        : Url.Content("~/images/default-event.jpg");
+        : Url.Content("~/images/slider/slide1.jpg");
 
     bool isPast = Model.StartDateTime.HasValue && Model.StartDateTime.Value < DateTime.Now;
     bool isAdmin = User.IsInRole("Admin");
+
+    var firstTag = (Model.Tag ?? "")
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+        .Select(t => t.Trim())
+        .FirstOrDefault();
 }
 
-<div class="card shadow-sm border-0 rounded-3 h-100 d-flex flex-column">
+<div class="css-event-card h-100 d-flex flex-column">
 
-    <!-- IMAGE -->
-    <img src="@imgSrc"
-         class="card-img-top"
-         style="height:180px;object-fit:cover;border-radius:12px 12px 0 0;" />
+    <div class="position-relative">
+        <img src="@imgSrc"
+             class="card-img-top"
+             alt="@Model.Title"
+             style="height:195px;object-fit:cover;width:100%;" />
 
-    <div class="card-body d-flex flex-column">
+        @if (!string.IsNullOrEmpty(firstTag))
+        {
+            <span class="position-absolute top-0 start-0 m-2 badge rounded-pill px-3 py-2 shadow-sm"
+                  style="background:rgba(15,23,42,0.78);color:#fff;backdrop-filter:blur(4px);">
+                @firstTag
+            </span>
+        }
 
-        <h5 class="fw-bold">@Model.Title</h5>
-
-        <p class="text-muted small mb-1">
-            <i class="fa-solid fa-location-dot me-1"></i> @Model.Venue<br />
-            <i class="fa-solid fa-calendar-days me-1"></i>
-            @(Model.StartDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt"))
-        </p>
-
-        <p class="fw-semibold mb-2">
+        <div class="position-absolute top-0 end-0 m-2">
             @if (Model.Price > 0)
             {
-                <span class="badge bg-warning text-dark px-3 py-2">৳ @Model.Price</span>
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm fw-bold">৳ @Model.Price</span>
             }
             else
             {
-                <span class="badge bg-success px-3 py-2">Free</span>
+                <span class="badge px-3 py-2 rounded-pill shadow-sm fw-bold" style="background-color:#166534;color:#fff;">Free</span>
             }
+        </div>
+    </div>
+
+    <div class="card-body d-flex flex-column p-3">
+
+        <h5 class="fw-bold mb-2" style="color:var(--css-ink);font-size:1.06rem;">@Model.Title</h5>
+
+        <p class="text-muted small mb-2" style="line-height:1.6;">
+            <i class="fa-solid fa-location-dot me-1" style="color:var(--css-primary);"></i> @(string.IsNullOrWhiteSpace(Model.Venue) ? "TBA" : Model.Venue)<br />
+            <i class="fa-solid fa-calendar-days me-1" style="color:var(--css-primary);"></i>
+            @(Model.StartDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") ?? "Date TBA")
         </p>
 
         @{
             string desc = Model.ShortDescription ?? "";
-            if (desc.Length > 110)
-                desc = desc.Substring(0, 110) + "...";
+            if (desc.Length > 105)
+                desc = desc.Substring(0, 105) + "...";
         }
-        <p class="text-secondary small flex-grow-1">@desc</p>
+        <p class="text-secondary small flex-grow-1 mb-3">@desc</p>
 
-        <!-- BUTTON AREA -->
         @if (isPast && !isAdmin)
         {
-            <!-- NORMAL USER → PAST EVENT → NO DETAILS -->
-            <button class="btn btn-secondary btn-sm w-100 mt-auto" disabled>
+            <button class="btn btn-secondary btn-sm w-100 mt-auto rounded-3 py-2" disabled>
                 This Event Has Been Closed
             </button>
         }
         else
         {
-            <!-- ADMIN OR NORMAL USER → UPCOMING -->
             <a asp-action="Details" asp-route-id="@Model.Id"
-               class="btn btn-primary btn-sm w-100 mt-auto">
-                Details
+               class="btn-css-primary btn-sm w-100 mt-auto py-2">
+                <span>View Details</span>
+                <i class="fa-solid fa-arrow-right"></i>
             </a>
         }
     </div>
 
-    <!-- ADMIN BUTTONS -->
     @if (isAdmin)
     {
         <div class="d-flex gap-2 bg-light p-2 border-top">
-
             <a asp-action="Edit"
                asp-route-id="@Model.Id"
-               class="btn btn-warning btn-sm w-50">
+               class="btn btn-warning btn-sm w-50 fw-semibold">
                 <i class="fa-solid fa-pen"></i> Edit
             </a>
 
@@ -77,11 +88,10 @@
                   onsubmit="return confirm('Are you sure you want to delete this event?');"
                   class="w-50">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-danger btn-sm w-100">
+                <button type="submit" class="btn btn-danger btn-sm w-100 fw-semibold">
                     <i class="fa-solid fa-trash"></i> Delete
                 </button>
             </form>
-
         </div>
     }
 

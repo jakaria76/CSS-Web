@@ -1,81 +1,85 @@
 ﻿@model CSS.Models.Notice
+@{
+    ViewData["Title"] = "Edit Notice";
+}
 
-<div class="container mt-4">
+<link rel="stylesheet" href="~/css/notice.css" asp-append-version="true" />
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold page-title">
-            <i class="bi bi-pencil-square"></i> Edit Notice
-        </h3>
-        <a asp-action="Index" class="btn btn-secondary rounded-pill px-4">Back</a>
+<section class="notice-hero">
+    <div class="container position-relative" style="z-index:2;">
+        <div class="notice-breadcrumb">
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <span>/</span>
+            <a asp-action="Index">Notice Management</a>
+            <span>/</span>
+            <span>Edit Notice</span>
+        </div>
+        <h1 class="notice-hero-title">Edit Notice</h1>
+        <p class="notice-hero-sub">Update notice title, publish date, or replace the attached PDF.</p>
     </div>
+</section>
 
-    <div class="card shadow-lg border-0 rounded-4 p-4 edit-card">
-
+<div class="container py-5">
+    <div class="notice-form-card">
         <form asp-action="Edit" enctype="multipart/form-data" method="post">
-
             <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="All" class="alert alert-danger rounded-3 small mb-3 @(ViewData.ModelState.IsValid ? "d-none" : "")"></div>
 
-            <!-- Title -->
             <div class="mb-3">
-                <label class="form-label fw-bold">Title</label>
-                <input asp-for="Title" class="form-control form-input" placeholder="Enter notice title" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                <label class="notice-label">Notice Title <span class="text-danger">*</span></label>
+                <input asp-for="Title" class="form-control notice-input" placeholder="Enter notice title" required />
+                <span asp-validation-for="Title" class="text-danger small"></span>
             </div>
 
-            <!-- Publish Date -->
             <div class="mb-3">
-                <label class="form-label fw-bold">Publish Date</label>
-                <input asp-for="PublishDate" type="date" class="form-control form-input" />
-                <span asp-validation-for="PublishDate" class="text-danger"></span>
+                <label class="notice-label">Publish Date <span class="text-danger">*</span></label>
+                <input asp-for="PublishDate" type="date" class="form-control notice-input" required />
+                <span asp-validation-for="PublishDate" class="text-danger small"></span>
             </div>
 
-            <!-- Replace PDF -->
             <div class="mb-3">
-                <label class="form-label fw-bold">Replace PDF (optional)</label>
-                <input type="file" name="file" accept="application/pdf" class="form-control form-input" />
-            </div>
-
-            <!-- Current PDF Info -->
-            <div class="mb-3">
-                <label class="form-label fw-bold">Current File</label>
-                <div class="d-flex align-items-center bg-light p-3 rounded-3">
-                    <i class="bi bi-filetype-pdf text-danger fs-4 me-2"></i>
-                    <span class="text-muted">@Model.FileName</span>
+                <label class="notice-label">Current File</label>
+                <div class="d-flex align-items-center justify-content-between bg-light border p-3 rounded-3">
+                    <div class="d-flex align-items-center gap-2 text-truncate">
+                        <i class="fa-solid fa-file-pdf text-danger fs-5"></i>
+                        <span class="fw-semibold text-dark text-truncate">@Model.FileName</span>
+                    </div>
+                    <a asp-controller="Notice" asp-action="ViewPdf" asp-route-id="@Model.Id" target="_blank" class="notice-pdf-btn">
+                        Preview
+                    </a>
                 </div>
             </div>
 
-            <!-- Submit Button -->
-            <button class="btn btn-primary rounded-pill px-4 fw-bold mt-2">
-                Update Notice
-            </button>
+            <div class="mb-4">
+                <label class="notice-label">Replace PDF <span class="text-muted fw-normal">(Optional)</span></label>
+                <label class="notice-pdf-drop w-100" for="noticeEditPdfFile">
+                    <i class="fa-solid fa-cloud-arrow-up fs-3 mb-2 d-block" style="color:var(--css-primary);"></i>
+                    <span class="fw-semibold text-dark d-block" id="noticeEditPdfLabel">Click to choose a new PDF (optional)</span>
+                    <input type="file" id="noticeEditPdfFile" name="file" accept="application/pdf" class="d-none" />
+                </label>
+            </div>
 
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn-css-primary px-4">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Update Notice</span>
+                </button>
+                <a asp-action="Index" class="btn btn-light border rounded-3 px-4 fw-semibold">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back
+                </a>
+            </div>
         </form>
-
     </div>
-
 </div>
 
-
-<!-- ================= CUSTOM CSS ================= -->
-<style>
-    .page-title {
-        color: #1b2b6b;
-        font-size: 26px;
-    }
-
-    .edit-card {
-        background: #ffffff;
-        border-radius: 18px;
-    }
-
-    .form-input {
-        height: 46px;
-        border-radius: 10px;
-        border: 1px solid #c8d2f2;
-    }
-
-        .form-input:focus {
-            border-color: #4154f1;
-            box-shadow: 0 0 4px rgba(65, 84, 241, 0.3);
-        }
-</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("noticeEditPdfFile").addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById("noticeEditPdfLabel").textContent = file.name;
+            }
+        });
+    </script>
+}

@@ -1,182 +1,128 @@
 ﻿@model List<CSS.ViewModels.BloodGroupVM>
 @{
     ViewData["Title"] = "Blood Groups";
+    int totalDonors = ViewBag.TotalDonors ?? 0;
+    int totalAvailable = ViewBag.TotalAvailable ?? 0;
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="~/css/blood.css" asp-append-version="true" />
 
-<style>
-    /* HEADER */
-    .page-header {
-        background: linear-gradient(to right, #d50000, #ff1744);
-        padding: 22px;
-        border-radius: 14px;
-        color: white;
-        margin-bottom: 28px;
-        text-align: center;
-        box-shadow: 0 5px 16px rgba(0,0,0,0.15);
-    }
+<!-- HERO -->
+<section class="blood-hero">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="blood-breadcrumb">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <span>Blood Service</span>
+                </div>
+                <h1 class="blood-hero-title">
+                    <i class="fa-solid fa-droplet me-2" style="color:#FA333A;"></i>Blood Donor Network
+                </h1>
+                <p class="blood-hero-sub">
+                    জরুরি প্রয়োজনে রক্তের গ্রুপ নির্বাচন করে আপনার সবচেয়ে কাছের সক্ষম রক্তদাতা খুঁজুন।
+                </p>
+            </div>
 
-        .page-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .page-header p {
-            font-size: 14px;
-            margin-top: 5px;
-            opacity: 0.9;
-        }
-
-    /* CARD */
-    .blood-card {
-        background: white;
-        border-radius: 18px;
-        padding: 20px;
-        margin-bottom: 16px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.10);
-        transition: 0.25s;
-        border-left: 6px solid #ff1744;
-    }
-
-        .blood-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 26px rgba(0,0,0,0.16);
-        }
-
-    .blood-label {
-        font-size: 30px;
-        font-weight: 900;
-        color: #ff1744;
-        letter-spacing: 1px;
-    }
-
-    /* STATS */
-    .stat-box {
-        font-size: 14px;
-        font-weight: 600;
-        padding: 5px 14px;
-        border-radius: 8px;
-        display: inline-block;
-        margin: 4px 6px 0 0;
-    }
-
-    .stat-total {
-        background: #eceff1;
-        color: #37474f;
-    }
-
-    .stat-available {
-        background: #c8e6c9;
-        color: #1b5e20;
-    }
-
-    .stat-unavailable {
-        background: #ffcdd2;
-        color: #b71c1c;
-    }
-
-    /* BUTTON */
-    .find-btn {
-        background: #ff1744;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: 0.25s;
-        font-size: 15px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-        .find-btn:hover {
-            background: #c4001d;
-            transform: scale(1.05);
-            color: white;
-        }
-
-    /* ----------- MOBILE RESPONSIVE ----------- */
-    @@media (max-width: 576px) {
-        .blood-card
-
-    {
-        padding: 18px;
-        margin-bottom: 18px;
-    }
-
-    .blood-label {
-        font-size: 26px;
-    }
-
-    .stat-box {
-        font-size: 13px;
-        padding: 4px 10px;
-    }
-
-    .find-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 12px;
-        margin-top: 15px;
-        font-size: 16px;
-    }
-
-    .blood-row {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    }
-</style>
-
-<div class="container my-4">
-
-    <!-- HEADER -->
-    <div class="page-header">
-        <h2><i class="fa-solid fa-droplet"></i> Blood Groups Summary</h2>
-        <p>Check available donors across all blood groups</p>
+            <div class="col-lg-5">
+                <div class="blood-hero-stats">
+                    <div class="blood-kpi-box">
+                        <div class="blood-kpi-num">@totalDonors</div>
+                        <div class="blood-kpi-label">মোট নিবন্ধিত ডোনার</div>
+                    </div>
+                    <div class="blood-kpi-box">
+                        <div class="blood-kpi-num" style="color:#86EFAC;">@totalAvailable</div>
+                        <div class="blood-kpi-label">রক্তদানে সক্ষম (Eligible)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <!-- BLOOD GROUP LIST -->
-    <div class="row gy-3">
+<div class="container blood-grid-wrap pb-5">
 
+    <!-- BLOOD GROUP CARDS -->
+    <div class="row g-3 g-md-4">
         @foreach (var bg in Model)
         {
-            <div class="col-md-6 col-12">
-                <div class="blood-card">
+            <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
+                <div class="blood-group-card">
+                    <div class="blood-card-top">
+                        <div class="blood-drop-badge">@bg.BloodGroup</div>
 
-                    <div class="d-flex justify-content-between align-items-start blood-row">
-
-                        <!-- LEFT SIDE -->
-                        <div>
-                            <div class="blood-label">@bg.BloodGroup</div>
-
-                            <div class="mt-2">
-                                <span class="stat-box stat-total">Total: @bg.Total</span>
-                                <span class="stat-box stat-available">Available: @bg.Available</span>
-                                <span class="stat-box stat-unavailable">Unavailable: @bg.NotAvailable</span>
-                            </div>
-                        </div>
-
-                        <!-- RIGHT SIDE BUTTON -->
-                        <div class="text-end">
-                            <a asp-controller="Blood"
-                               asp-action="Find"
-                               asp-route-group="@bg.BloodGroup"
-                               class="find-btn">
-                                <i class="fa-solid fa-magnifying-glass-location"></i> Find
-                            </a>
-                        </div>
-
+                        @if (bg.Available > 0)
+                        {
+                            <span class="blood-avail-pill has-donors">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>@bg.Available Ready</span>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="blood-avail-pill no-donors">
+                                <i class="fa-regular fa-clock"></i>
+                                <span>0 Ready</span>
+                            </span>
+                        }
                     </div>
 
+                    <div class="blood-stats-row">
+                        <div class="blood-stat-cell">
+                            <div class="blood-stat-val">@bg.Total</div>
+                            <div class="blood-stat-lbl">Total</div>
+                        </div>
+                        <div class="blood-stat-cell">
+                            <div class="blood-stat-val text-green">@bg.Available</div>
+                            <div class="blood-stat-lbl">Available</div>
+                        </div>
+                        <div class="blood-stat-cell">
+                            <div class="blood-stat-val text-red">@bg.NotAvailable</div>
+                            <div class="blood-stat-lbl">Unavailable</div>
+                        </div>
+                    </div>
+
+                    <a asp-controller="Blood"
+                       asp-action="Find"
+                       asp-route-group="@bg.BloodGroup"
+                       class="blood-find-btn">
+                        <i class="fa-solid fa-magnifying-glass-location"></i>
+                        <span>Find @bg.BloodGroup Donors</span>
+                    </a>
                 </div>
             </div>
         }
+    </div>
 
+    <!-- DONOR PROFILE CTA -->
+    <div class="blood-cta-card mt-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-8">
+                <h5 class="fw-bold mb-1" style="color:var(--css-ink);">
+                    <i class="fa-solid fa-heart-pulse me-2" style="color:var(--css-primary);"></i>রক্তদাতা হিসেবে নিজেকে যুক্ত করতে চান?
+                </h5>
+                <p class="text-muted small mb-0">
+                    আপনার প্রোফাইলে রক্তের গ্রুপ, লোকেশন ও সর্বশেষ রক্তদানের তারিখ আপডেট রাখুন—যাতে জরুরি মুহূর্তে রোগীর স্বজনরা আপনাকে খুঁজে পেতে পারেন।
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-controller="Profile" asp-action="Edit" class="btn-css-primary">
+                        <i class="fa-solid fa-user-pen"></i>
+                        <span>Update Donor Info</span>
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn-css-primary">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Register as Donor</span>
+                    </a>
+                }
+            </div>
+        </div>
     </div>
 
 </div>

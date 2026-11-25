@@ -1,167 +1,168 @@
 ﻿@{
-    ViewData["Title"] = "Find Donors";
-    var group = ViewBag.Group as string ?? "";
+    ViewData["Title"] = "Find Nearest Donors";
+    var group = ViewBag.Group as string ?? "A+";
+    var allGroups = ViewBag.AllGroups as string[] ?? new[] { "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-" };
 }
 
-<!-- Leaflet Map -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<link rel="stylesheet" href="~/css/blood.css" asp-append-version="true" />
 
-<style>
-    .find-header {
-        background: linear-gradient(to right, #1b2a6b, #3949ab);
-        padding: 18px;
-        border-radius: 12px;
-        color: white;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
+<!-- HERO -->
+<section class="blood-hero">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <div class="blood-breadcrumb">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <a asp-action="Index">Blood</a>
+                    <span>/</span>
+                    <span>Find @group</span>
+                </div>
+                <h1 class="blood-hero-title">
+                    Find Nearest <span class="badge bg-success ms-1 px-3 py-2">@group</span> Donors
+                </h1>
+                <p class="blood-hero-sub">
+                    ম্যাপে ক্লিক করে অথবা আপনার বর্তমান GPS লোকেশন ব্যবহার করে কাছের রক্তদাতা খুঁজুন।
+                </p>
+            </div>
 
-        .find-header h3 {
-            margin: 0;
-            font-weight: 700;
-        }
-
-    #map {
-        border-radius: 12px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    }
-
-    .btn-custom-primary {
-        background: #1b2a6b;
-        border: none;
-        padding: 10px 28px;
-        color: white;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: 0.25s;
-    }
-
-        .btn-custom-primary:hover {
-            background: #0d1744;
-            transform: scale(1.03);
-        }
-
-    .btn-custom-outline {
-        border: 2px solid #1b2a6b;
-        padding: 10px 22px;
-        color: #1b2a6b;
-        border-radius: 8px;
-        transition: 0.25s;
-        font-weight: 600;
-    }
-
-        .btn-custom-outline:hover {
-            background: #1b2a6b;
-            color: white;
-            transform: scale(1.03);
-        }
-
-    .tip-text {
-        font-size: 0.9rem;
-        color: #555;
-        margin-top: 8px;
-    }
-
-    .blood-tag {
-        padding: 6px 16px;
-        border-radius: 8px;
-        background: #ff1744;
-        color: white;
-        font-weight: 700;
-        margin-left: 8px;
-    }
-</style>
-
-<div class="container my-4">
-
-    <!-- HEADER -->
-    <div class="find-header text-center">
-        <h3>
-            <i class="fa-solid fa-location-dot"></i> Find Donors
-            <span class="blood-tag">@group</span>
-        </h3>
-        <p class="mt-1">Choose your current location to see the nearest donors.</p>
+            <a asp-action="Index" class="btn-css-outline px-3 py-2">
+                <i class="fa-solid fa-arrow-left me-1"></i> All Blood Groups
+            </a>
+        </div>
     </div>
+</section>
 
-    <!-- FORM -->
-    <form method="post" class="mb-4">
+<div class="container py-4 pb-5">
 
-        <input type="hidden" name="group" value="@group" />
-        <input type="hidden" id="lat" name="lat" />
-        <input type="hidden" id="lng" name="lng" />
-
-        <!-- MAP -->
-        <div id="map" style="height: 460px;"></div>
-
-        <div class="d-flex justify-content-center gap-3 mt-4">
-            <button type="button" id="btnUseLocation" class="btn-custom-outline">
-                <i class="fa-solid fa-crosshairs"></i> Use my location
-            </button>
-
-            <button type="submit" class="btn-custom-primary">
-                <i class="fa-solid fa-magnifying-glass-location"></i> Search Nearest Donors
-            </button>
+    <div class="blood-panel-card">
+        <!-- Quick Group Switcher -->
+        <div class="mb-4 text-center">
+            <div class="small fw-semibold text-muted mb-2">Switch Blood Group:</div>
+            <div class="blood-group-switcher">
+                @foreach (var bg in allGroups)
+                {
+                    <a asp-action="Find" asp-route-group="@bg"
+                       class="blood-switch-pill @(bg == group ? "is-active" : "")">
+                        @bg
+                    </a>
+                }
+            </div>
         </div>
 
-        <p class="tip-text text-center">
-            Tip: Click anywhere on the map to select your location. You can drag the marker to adjust accurately.
-        </p>
-    </form>
+        <form id="findDonorForm" asp-action="Find" method="post">
+            <input type="hidden" name="group" value="@group" />
+            <input type="hidden" id="lat" name="lat" />
+            <input type="hidden" id="lng" name="lng" />
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <span id="coordStatus" class="blood-coord-status">
+                    <i class="fa-solid fa-location-crosshairs"></i>
+                    <span>ম্যাপে ক্লিক করে লোকেশন নির্বাচন করুন</span>
+                </span>
+
+                <button type="button" id="btnUseLocation" class="btn-css-outline btn-sm">
+                    <i class="fa-solid fa-crosshairs"></i>
+                    <span>Use My Current Location</span>
+                </button>
+            </div>
+
+            <div id="map" class="blood-map-frame"></div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4">
+                <p class="small text-muted mb-0">
+                    <i class="fa-regular fa-lightbulb me-1" style="color:var(--css-primary);"></i>
+                    টিপস: ম্যাপের যেকোনো স্থানে ক্লিক করুন অথবা মার্কার টেনে (drag) নিখুঁত অবস্থান ঠিক করুন।
+                </p>
+
+                <button type="submit" class="btn-css-primary px-4 py-2">
+                    <i class="fa-solid fa-magnifying-glass-location"></i>
+                    <span>Search Nearest @group Donors</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
 </div>
 
-<!-- MAP SCRIPT -->
-<script>
-    var defaultLat = 23.8103; // Dhaka Center
-    var defaultLng = 90.4125;
+@section Scripts {
+    <script>
+        (function () {
+            const defaultLat = 23.8103;
+            const defaultLng = 90.4125;
 
-    var map = L.map('map').setView([defaultLat, defaultLng], 12);
+            const map = L.map('map').setView([defaultLat, defaultLng], 12);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-    }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-    var marker;
+            let marker = null;
+            const latInput = document.getElementById("lat");
+            const lngInput = document.getElementById("lng");
+            const statusBadge = document.getElementById("coordStatus");
 
-    function setMarker(lat, lng, doPan = true) {
-        if (marker) {
-            marker.setLatLng([lat, lng]);
-        } else {
-            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            function updateCoords(lat, lng) {
+                latInput.value = lat;
+                lngInput.value = lng;
+                statusBadge.classList.add("is-ready");
+                statusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>Selected: ${lat.toFixed(5)}, ${lng.toFixed(5)}</span>`;
+            }
 
-            marker.on('dragend', function (e) {
-                var pos = e.target.getLatLng();
-                document.getElementById("lat").value = pos.lat;
-                document.getElementById("lng").value = pos.lng;
+            function setMarker(lat, lng, doPan = true) {
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                    marker.on('dragend', function (e) {
+                        const pos = e.target.getLatLng();
+                        updateCoords(pos.lat, pos.lng);
+                    });
+                }
+
+                updateCoords(lat, lng);
+                if (doPan) {
+                    map.setView([lat, lng], 14);
+                }
+            }
+
+            map.on('click', function (e) {
+                setMarker(e.latlng.lat, e.latlng.lng);
             });
-        }
 
-        document.getElementById("lat").value = lat;
-        document.getElementById("lng").value = lng;
+            document.getElementById("btnUseLocation").addEventListener("click", function () {
+                const btn = this;
+                if (!navigator.geolocation) {
+                    Swal.fire({ icon: "warning", title: "Unsupported", text: "Your browser does not support geolocation.", confirmButtonColor: "#15803D" });
+                    return;
+                }
 
-        if (doPan) {
-            map.setView([lat, lng], 14);
-        }
-    }
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Locating...</span>';
 
-    // click map to pick location
-    map.on('click', function (e) {
-        setMarker(e.latlng.lat, e.latlng.lng);
-    });
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    setMarker(pos.coords.latitude, pos.coords.longitude);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-crosshairs"></i><span>Use My Current Location</span>';
+                }, function (err) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-crosshairs"></i><span>Use My Current Location</span>';
+                    Swal.fire({ icon: "error", title: "Location Error", text: "Unable to access your GPS location: " + err.message, confirmButtonColor: "#15803D" });
+                }, { enableHighAccuracy: true, timeout: 10000 });
+            });
 
-    // use GPS
-    document.getElementById("btnUseLocation").addEventListener("click", function () {
-        if (!navigator.geolocation) {
-            alert("Your browser does not support location.");
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(function (pos) {
-            var lat = pos.coords.latitude;
-            var lng = pos.coords.longitude;
-            setMarker(lat, lng);
-        }, function (err) {
-            alert("Unable to get location: " + err.message);
-        }, { enableHighAccuracy: true });
-    });
-</script>
+            document.getElementById("findDonorForm").addEventListener("submit", function (e) {
+                if (!latInput.value || !lngInput.value) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: "info",
+                        title: "লোকেশন নির্বাচন করুন",
+                        text: "দয়া করে ম্যাপে ক্লিক করে অথবা 'Use My Current Location' বাটনে ক্লিক করে আপনার অবস্থান নির্বাচন করুন।",
+                        confirmButtonColor: "#15803D"
+                    });
+                }
+            });
+        })();
+    </script>
+}

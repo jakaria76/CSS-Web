@@ -1,0 +1,41 @@
+@{
+    var headline = ViewData["BrandHeadline"] as string ?? "Together for a Conscious & Compassionate Society";
+    var description = ViewData["BrandDescription"] as string ?? "Connect with members, participate in welfare events, and help save lives through our community blood donor network.";
+}
+
+<aside class="auth-brand-panel">
+    <div>
+        <div class="auth-brand-header">
+            <div class="auth-brand-logo-wrap">
+                <img src="~/images/csslogo.png" alt="CSS Logo" />
+            </div>
+            <div>
+                <h2 class="auth-brand-name">CONSCIOUS STUDENT SOCIETY</h2>
+                <p class="auth-brand-bn">সচেতন ছাত্র সমাজ</p>
+            </div>
+        </div>
+
+        <h3 class="auth-brand-headline">@headline</h3>
+        <p class="auth-brand-desc">@description</p>
+
+        <ul class="auth-feature-list">
+            <li>
+                <span class="auth-feature-icon"><i class="fa-solid fa-droplet"></i></span>
+                <span>Nearest Blood Donor Network &amp; Emergency Support</span>
+            </li>
+            <li>
+                <span class="auth-feature-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span>Social Welfare Events &amp; Volunteer Programs</span>
+            </li>
+            <li>
+                <span class="auth-feature-icon"><i class="fa-solid fa-users"></i></span>
+                <span>Verified Member Profiles &amp; Official Notices</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="auth-brand-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Non-political Student Welfare Organization</span>
+    </div>
+</aside>

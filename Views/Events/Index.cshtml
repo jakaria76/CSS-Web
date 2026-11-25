@@ -1,73 +1,216 @@
 ﻿@model CSS.ViewModels.EventListVM
 @{
     ViewData["Title"] = "Events";
+    var featured = Model.Featured ?? new List<CSS.Models.Event>();
+    var upcoming = Model.Upcoming ?? new List<CSS.Models.Event>();
+    var past = Model.Past ?? new List<CSS.Models.Event>();
+    var categories = Model.Categories ?? new List<string>();
 }
 
-<link rel="stylesheet" href="~/css/events.css" />
+<link rel="stylesheet" href="~/css/events.css" asp-append-version="true" />
 
-<div class="container my-4">
+<!-- HERO -->
+<section class="events-hero">
+    <div class="container position-relative" style="z-index:2;">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="events-breadcrumb">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <span>Events</span>
+                </div>
+                <h1 class="events-hero-title">Events &amp; Social Initiatives</h1>
+                <p class="events-hero-sub">
+                    সচেতন ছাত্র সমাজের সেমিনার, রক্তদান কর্মসূচি, শিক্ষা ও সমাজকল্যাণমূলক ইভেন্টগুলোতে অংশ নিন।
+                </p>
+            </div>
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Events</h2>
+            <div class="col-lg-5">
+                <div class="events-kpi-row">
+                    <div class="events-kpi-pill">
+                        <div class="events-kpi-num">@upcoming.Count</div>
+                        <div class="events-kpi-lbl">Upcoming</div>
+                    </div>
+                    <div class="events-kpi-pill">
+                        <div class="events-kpi-num">@past.Count</div>
+                        <div class="events-kpi-lbl">Completed</div>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Events" asp-action="Create" class="btn-css-primary py-2 px-3">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Event</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-        <div class="d-flex gap-2">
-            <select id="categoryFilter" class="form-select w-auto">
-                <option value="">All</option>
-                @foreach (var c in Model.Categories)
-                {
-                    <option value="@c" selected="@(c == Model.SelectedCategory)">@c</option>
-                }
-            </select>
+<div class="container pb-5">
 
-            @if (User.IsInRole("Admin"))
+    <!-- SEARCH & CATEGORY FILTER TOOLBAR -->
+    <div class="events-toolbar mb-4">
+        <div class="events-search-wrap">
+            <i class="fa-solid fa-magnifying-glass events-search-icon"></i>
+            <input id="eventSearchInput"
+                   type="search"
+                   placeholder="ইভেন্টের নাম বা স্থান দিয়ে খুঁজুন..."
+                   class="events-search-input"
+                   aria-label="Search events" />
+        </div>
+
+        <div class="events-cat-pills">
+            <a asp-action="Index" asp-route-category=""
+               class="events-cat-pill @(string.IsNullOrEmpty(Model.SelectedCategory) ? "is-active" : "")">
+                All Events
+            </a>
+            @foreach (var c in categories)
             {
-                <a asp-controller="Events" asp-action="Create" class="btn btn-danger">
-                    + Add Event
+                <a asp-action="Index" asp-route-category="@c"
+                   class="events-cat-pill @(string.Equals(c, Model.SelectedCategory, StringComparison.OrdinalIgnoreCase) ? "is-active" : "")">
+                    @c
                 </a>
             }
         </div>
     </div>
 
-    <!-- UPCOMING -->
-    <h4 class="fw-bold mb-3">Upcoming Events</h4>
-    <div class="row g-4">
+    <!-- FEATURED CAROUSEL (If Featured Upcoming Events Exist) -->
+    @if (featured.Any())
+    {
+        <div id="featuredEventsCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @for (int i = 0; i < featured.Count; i++)
+                {
+                    var fe = featured[i];
+                    var feImg = (fe.BannerImage != null && fe.BannerImage.Length > 0)
+                        ? $"data:{(string.IsNullOrWhiteSpace(fe.BannerImageType) ? "image/jpeg" : fe.BannerImageType)};base64,{Convert.ToBase64String(fe.BannerImage)}"
+                        : Url.Content("~/images/slider/slide1.jpg");
 
-        @foreach (var e in Model.Upcoming)
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="featured-event-card" style="background-image:url('@feImg');">
+                            <div class="featured-event-content">
+                                <span class="featured-badge">
+                                    <i class="fa-solid fa-star"></i> Featured Event
+                                </span>
+                                <h2 class="fw-bold mb-2">@fe.Title</h2>
+                                @if (!string.IsNullOrWhiteSpace(fe.ShortDescription))
+                                {
+                                    <p class="mb-3 opacity-90">@fe.ShortDescription</p>
+                                }
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="event-meta-pill">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                        @(fe.StartDateTime?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") ?? "TBA")
+                                    </span>
+                                    @if (!string.IsNullOrWhiteSpace(fe.Venue))
+                                    {
+                                        <span class="event-meta-pill">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            @fe.Venue
+                                        </span>
+                                    }
+                                </div>
+                                <a asp-action="Details" asp-route-id="@fe.Id" class="btn-css-primary">
+                                    <span>View &amp; Register</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            @if (featured.Count > 1)
+            {
+                <button class="carousel-control-prev" type="button" data-bs-target="#featuredEventsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#featuredEventsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+            }
+        </div>
+    }
+
+    <!-- UPCOMING EVENTS -->
+    <div class="mb-5">
+        <div class="events-section-head">
+            <h2 class="events-section-title">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Upcoming Events</span>
+            </h2>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">@upcoming.Count Events</span>
+        </div>
+
+        @if (upcoming.Any())
         {
-            <div class="col-md-4">
-                @await Html.PartialAsync("_EventCard", e)
+            <div class="row g-4" id="upcomingGrid">
+                @foreach (var e in upcoming)
+                {
+                    <div class="col-lg-4 col-md-6 col-12 event-filter-item">
+                        @await Html.PartialAsync("_EventCard", e)
+                    </div>
+                }
             </div>
         }
-
+        else
+        {
+            <div class="events-empty-box">
+                <i class="fa-regular fa-calendar-xmark d-block"></i>
+                <h6 class="fw-bold text-dark mb-1">এই মুহূর্তে কোনো আসন্ন ইভেন্ট নেই</h6>
+                <p class="small mb-0">নতুন ইভেন্ট ঘোষণা হলেই এখানে প্রকাশিত হবে।</p>
+            </div>
+        }
     </div>
 
     <!-- PAST EVENTS -->
-    <h4 class="fw-bold mt-5 mb-3">Past Events</h4>
-    <div class="row g-4">
+    <div>
+        <div class="events-section-head">
+            <h2 class="events-section-title">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Past Events</span>
+            </h2>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">@past.Count Completed</span>
+        </div>
 
-        @foreach (var p in Model.Past.Take(8))
+        @if (past.Any())
         {
-            <div class="col-md-4">
-
-                @await Html.PartialAsync("_EventCard", p)
-
-                
-
+            <div class="row g-4" id="pastGrid">
+                @foreach (var p in past.Take(8))
+                {
+                    <div class="col-lg-4 col-md-6 col-12 event-filter-item">
+                        @await Html.PartialAsync("_EventCard", p)
+                    </div>
+                }
             </div>
         }
-
+        else
+        {
+            <div class="events-empty-box">
+                <i class="fa-regular fa-folder-open d-block"></i>
+                <h6 class="fw-bold text-dark mb-1">এখনো কোনো পূর্ববর্তী ইভেন্ট নেই</h6>
+                <p class="small mb-0">সম্পন্ন হওয়া ইভেন্টগুলো এখানে সংরক্ষিত থাকবে।</p>
+            </div>
+        }
     </div>
 
 </div>
 
 @section Scripts {
     <script>
-        document.getElementById('categoryFilter').addEventListener('change', function () {
-            const url = new URL(window.location.href);
-            if (this.value) url.searchParams.set('category', this.value);
-            else url.searchParams.delete('category');
-            window.location.href = url;
-        });
+        (function () {
+            const searchInput = document.getElementById("eventSearchInput");
+            const items = document.querySelectorAll(".event-filter-item");
+            if (!searchInput || !items.length) return;
+
+            searchInput.addEventListener("input", function () {
+                const q = this.value.trim().toLowerCase();
+                items.forEach(item => {
+                    const text = item.innerText.toLowerCase();
+                    item.style.display = text.includes(q) ? "" : "none";
+                });
+            });
+        })();
     </script>
 }

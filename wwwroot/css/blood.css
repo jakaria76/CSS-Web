@@ -1,0 +1,363 @@
+/* =========================================================
+   CONSCIOUS STUDENT SOCIETY (CSS) — SHADCN/UI BLOOD SERVICE
+   ========================================================= */
+
+.blood-hero {
+    background-color: #fafafa;
+    background-image: radial-gradient(rgba(9, 9, 11, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+    padding: 36px 0 42px;
+}
+
+.blood-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+}
+
+.blood-breadcrumb a {
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.blood-breadcrumb a:hover { text-decoration: underline; }
+
+.blood-hero-title {
+    font-size: clamp(1.65rem, 2.8vw, 2.2rem);
+    font-weight: 700;
+    color: var(--foreground);
+    margin: 0 0 6px;
+}
+
+.blood-hero-sub {
+    font-size: 0.94rem;
+    color: var(--muted-foreground);
+    margin: 0;
+    max-width: 560px;
+}
+
+.blood-hero-stats {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.blood-kpi-box {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 18px;
+    min-width: 140px;
+    box-shadow: var(--css-shadow-xs);
+}
+
+.blood-kpi-num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+}
+
+.blood-kpi-label {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-top: 2px;
+}
+
+/* ==================== BLOOD GROUP CARDS ==================== */
+.blood-grid-wrap {
+    padding-top: 28px;
+}
+
+.blood-group-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--css-shadow-xs);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.blood-group-card:hover {
+    border-color: #a1a1aa;
+    box-shadow: var(--css-shadow-sm);
+}
+
+.blood-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.blood-drop-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    font-size: 1.3rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.blood-avail-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+}
+
+.blood-avail-pill.has-donors {
+    background: var(--css-primary-soft);
+    border-color: var(--css-primary-border);
+    color: var(--css-primary-dark);
+}
+
+.blood-avail-pill.no-donors {
+    background: var(--muted);
+    color: var(--muted-foreground);
+}
+
+.blood-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.blood-stat-cell {
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 6px;
+    text-align: center;
+}
+
+.blood-stat-val {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--foreground);
+    line-height: 1.2;
+}
+
+.blood-stat-val.text-green { color: var(--css-primary); }
+.blood-stat-val.text-red { color: #dc2626; }
+
+.blood-stat-lbl {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    margin-top: 1px;
+}
+
+.blood-find-btn {
+    margin-top: auto;
+    width: 100%;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    background-color: var(--css-primary);
+    color: #ffffff !important;
+    font-weight: 500;
+    font-size: 13.5px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: var(--css-shadow-xs);
+    transition: background-color 0.15s ease;
+}
+
+.blood-find-btn:hover {
+    background-color: var(--css-primary-dark);
+}
+
+.blood-cta-card {
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+}
+
+/* ==================== FIND PAGE (SHADCN SEGMENTED TABS + MAP) ==================== */
+.blood-group-switcher {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    background: var(--muted);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.blood-switch-pill {
+    padding: 5px 13px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    background: transparent;
+    color: var(--muted-foreground);
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+
+.blood-switch-pill:hover {
+    color: var(--foreground);
+}
+
+.blood-switch-pill.is-active {
+    background: #ffffff;
+    color: var(--foreground);
+    font-weight: 600;
+    box-shadow: var(--css-shadow-xs);
+}
+
+.blood-panel-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: var(--css-shadow-sm);
+}
+
+.blood-map-frame {
+    width: 100%;
+    height: 430px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.blood-coord-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 500;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+}
+
+.blood-coord-status.is-ready {
+    background: var(--css-primary-soft);
+    color: var(--css-primary-dark);
+    border-color: var(--css-primary-border);
+}
+
+/* ==================== NEAREST DONORS PAGE ==================== */
+.donor-list-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--css-shadow-sm);
+}
+
+.donor-list-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.donor-table { margin: 0; }
+
+.donor-table thead th {
+    background: #fafafa;
+    color: var(--muted-foreground);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.donor-table tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+}
+
+.donor-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.donor-table tbody tr:hover { background: #fafafa; }
+
+.donor-rank-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--muted);
+    color: var(--foreground);
+    font-weight: 600;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.distance-pill {
+    background: var(--css-primary-soft);
+    border: 1px solid var(--css-primary-border);
+    color: var(--css-primary-dark);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.blood-empty-box {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--muted-foreground);
+}
+
+.blood-empty-box i {
+    font-size: 2rem;
+    color: var(--css-primary);
+    margin-bottom: 10px;
+}
+
+@media (max-width: 767.98px) {
+    .blood-hero { padding: 28px 0 32px; }
+    .blood-hero-stats { justify-content: flex-start; }
+    .blood-map-frame { height: 310px; }
+    .blood-panel-card { padding: 16px; }
+}

@@ -1,193 +1,225 @@
-﻿@model List<CSS.ViewModels.DonorWithDistance>
+﻿@using System.Text.Json
+@model List<CSS.ViewModels.DonorWithDistance>
 @{
     ViewData["Title"] = "Nearest Donors";
-    var searchLat = (double?)(ViewBag.UserLatitude) ?? 0;
-    var searchLng = (double?)(ViewBag.UserLongitude) ?? 0;
+    var searchLat = (double?)(ViewBag.UserLatitude) ?? 23.8103;
+    var searchLng = (double?)(ViewBag.UserLongitude) ?? 90.4125;
     var group = ViewBag.Group as string ?? "";
+
+    var donorJsonList = Model.Select((d, idx) => new
+    {
+        index = idx,
+        id = d.User.Id,
+        name = string.IsNullOrWhiteSpace(d.User.FullName) ? "CSS Donor" : d.User.FullName,
+        lat = d.User.Latitude,
+        lng = d.User.Longitude,
+        distance = Math.Round(d.DistanceKm, 2),
+        dms = d.User.LocationDms ?? "",
+        district = d.User.District ?? ""
+    }).ToList();
 }
 
-<!-- Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<link rel="stylesheet" href="~/css/blood.css" asp-append-version="true" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<!-- HERO -->
+<section class="blood-hero">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <div class="blood-breadcrumb">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <a asp-action="Index">Blood</a>
+                    <span>/</span>
+                    <span>Nearest @group</span>
+                </div>
+                <h1 class="blood-hero-title">
+                    Nearest <span class="badge bg-success ms-1 px-3 py-2">@group</span> Donors
+                </h1>
+                <p class="blood-hero-sub">
+                    আপনার নির্বাচিত অবস্থান থেকে দূরত্ব অনুযায়ী নিকটতম রক্তদাতাদের তালিকা।
+                </p>
+            </div>
 
-<style>
-    .page-header {
-        background: linear-gradient(to right, #d50000, #ff1744);
-        padding: 20px;
-        border-radius: 12px;
-        color: white;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.15);
-        text-align: center;
-    }
-
-        .page-header h3 {
-            margin: 0;
-            font-weight: 700;
-        }
-
-    .blood-badge {
-        background: #ffffff22;
-        padding: 6px 18px;
-        border-radius: 6px;
-        font-weight: 600;
-    }
-
-    /* Donor Table Style */
-    .donor-table {
-        background: white;
-        border-radius: 14px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    }
-
-        .donor-table th {
-            background-color: #1b2a6b;
-            color: white;
-            font-weight: 600;
-        }
-
-        .donor-table tbody tr:hover {
-            background: #f5f5f5;
-            cursor: pointer;
-        }
-
-    .distance-badge {
-        background: #e3f2fd;
-        padding: 4px 10px;
-        border-radius: 6px;
-        color: #0d47a1;
-        font-weight: 700;
-    }
-
-    /* Map */
-    #mapNearest {
-        border-radius: 14px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
-</style>
-
-<div class="container my-4">
-
-    <!-- Header -->
-    <div class="page-header">
-        <h3>
-            <i class="fa-solid fa-location-dot"></i>
-            Nearest Donors for
-            <span class="blood-badge">@group</span>
-        </h3>
-        <p class="mt-1">Donors ranked from closest to farthest from your selected location.</p>
+            <div class="d-flex gap-2">
+                <a asp-action="Find" asp-route-group="@group" class="btn-css-outline px-3 py-2">
+                    <i class="fa-solid fa-location-dot me-1"></i> Change Location
+                </a>
+                <a asp-action="Index" class="btn-css-primary px-3 py-2">
+                    All Groups
+                </a>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="row">
-        <!-- LEFT SIDE — Donor List -->
-        <div class="col-lg-6 mb-4">
-            <div class="donor-table p-3">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Donor</th>
-                            <th>Distance</th>
-                            <th>Profile</th>
-                        </tr>
-                    </thead>
+<div class="container py-4 pb-5">
+    <div class="row g-4">
 
-                    <tbody>
-                        @for (int i = 0; i < Model.Count; i++)
-                        {
-                            var d = Model[i];
-                            <tr>
-                                <td>@(i + 1)</td>
-                                <td>
-                                    <i class="fa-solid fa-user text-primary me-1"></i>
-                                    @d.User.FullName
-                                </td>
-                                <td>
-                                    <span class="distance-badge">@Math.Round(d.DistanceKm, 2) km</span>
-                                </td>
-                                <td>
-                                    <a asp-controller="Profile" asp-action="View" asp-route-id="@d.User.Id"
-                                       class="btn btn-sm btn-primary">
-                                        View
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+        <!-- LEFT SIDE: DONOR LIST -->
+        <div class="col-lg-6">
+            <div class="donor-list-card h-100">
+                <div class="donor-list-header">
+                    <h6 class="fw-bold mb-0" style="color:var(--css-ink);">
+                        <i class="fa-solid fa-users me-2" style="color:var(--css-primary);"></i>Available Donors (@Model.Count)
+                    </h6>
+                    <span class="small text-muted">Sorted by distance</span>
+                </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table donor-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width:48px;">#</th>
+                                    <th>Donor</th>
+                                    <th>Distance</th>
+                                    <th class="text-end">Profile</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Count; i++)
+                                {
+                                    var d = Model[i];
+                                    var name = string.IsNullOrWhiteSpace(d.User.FullName) ? "CSS Donor" : d.User.FullName;
+
+                                    <tr data-donor-index="@i" title="Click to focus on map">
+                                        <td><span class="donor-rank-badge">@(i + 1)</span></td>
+                                        <td>
+                                            <div class="fw-semibold text-dark">@name</div>
+                                            @if (!string.IsNullOrWhiteSpace(d.User.District))
+                                            {
+                                                <div class="small text-muted">
+                                                    <i class="fa-solid fa-location-dot me-1"></i>@d.User.District
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="distance-pill">
+                                                <i class="fa-solid fa-route me-1" style="color:var(--css-primary);"></i>
+                                                @Math.Round(d.DistanceKm, 2) km
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-controller="Profile" asp-action="View" asp-route-id="@d.User.Id"
+                                               class="btn-css-outline btn-sm py-1 px-3"
+                                               onclick="event.stopPropagation();">
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="blood-empty-box">
+                        <i class="fa-solid fa-droplet-slash d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">এই মুহূর্তে কোনো সক্ষম @group রক্তদাতা পাওয়া যায়নি</h6>
+                        <p class="small mb-3">
+                            ডোনারের প্রোফাইলে লোকেশন ও রক্তদানের যোগ্যতা ("Eligible") সেট করা থাকলে এখানে দেখাবে।
+                        </p>
+                        <a asp-action="Index" class="btn-css-primary btn-sm">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>অন্য রক্তের গ্রুপ দেখুন</span>
+                        </a>
+                    </div>
+                }
             </div>
         </div>
 
-        <!-- RIGHT SIDE — MAP -->
+        <!-- RIGHT SIDE: MAP -->
         <div class="col-lg-6">
-            <div id="mapNearest" style="height: 460px;"></div>
+            <div class="blood-panel-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                    <span class="small fw-bold text-dark">
+                        <i class="fa-solid fa-map-location-dot me-1" style="color:var(--css-primary);"></i>Donor Locations Map
+                    </span>
+                    <span class="small text-muted">তালিকার যেকোনো ডোনারে ক্লিক করলে ম্যাপে ফোকাস হবে</span>
+                </div>
+                <div id="mapNearest" class="blood-map-frame"></div>
+            </div>
         </div>
+
     </div>
 </div>
 
-<script>
-    var searchLat = parseFloat("@searchLat".replace(",", ".")) || 23.8103;
-    var searchLng = parseFloat("@searchLng".replace(",", ".")) || 90.4125;
+@section Scripts {
+    <script>
+        (function () {
+            const searchLat = @Html.Raw(JsonSerializer.Serialize(searchLat));
+            const searchLng = @Html.Raw(JsonSerializer.Serialize(searchLng));
+            const donors = @Html.Raw(JsonSerializer.Serialize(donorJsonList));
 
-    var map = L.map('mapNearest').setView([searchLat, searchLng], 11);
+            const map = L.map('mapNearest').setView([searchLat, searchLng], 12);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-    }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-    // User marker
-    var userMarker = L.marker([searchLat, searchLng], { title: "Your Location" })
-        .addTo(map)
-        .bindPopup("<b>Your Location</b>")
-        .openPopup();
+            L.circleMarker([searchLat, searchLng], {
+                radius: 9,
+                fillColor: "#0F172A",
+                color: "#ffffff",
+                weight: 3,
+                opacity: 1,
+                fillOpacity: 1
+            }).addTo(map).bindPopup("<b>Your Selected Location</b>").openPopup();
 
-    // Donors in JS
-    var donors = [
-        @foreach (var d in Model)
-        {
-                @: {
-                @: id: "@d.User.Id",
-                @: name: "@(d.User.FullName?.Replace("'", "\\'"))",
-                @: lat: @d.User.Latitude?.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                @: lng: @d.User.Longitude?.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                @: distance: @Math.Round(d.DistanceKm, 2),
-                @: dms: "@(d.User.LocationDms ?? "")"
-                @: },
-        }
-    ];
+            const bounds = [[searchLat, searchLng]];
+            const markerByIndex = {};
 
-    var bounds = [];
-    bounds.push([searchLat, searchLng]);
+            function escapeHtml(text) {
+                return String(text || "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
 
-    donors.forEach(function (donor) {
+            donors.forEach(function (donor) {
+                if (donor.lat == null || donor.lng == null) return;
 
-        if (!donor.lat || !donor.lng) return;
+                const marker = L.marker([donor.lat, donor.lng]).addTo(map);
+                const popupHtml = `
+                    <div style="min-width:190px;font-family:Segoe UI,sans-serif;">
+                        <strong style="color:#0F172A;font-size:14px;">${escapeHtml(donor.name)}</strong><br>
+                        <span style="color:#15803D;font-weight:700;font-size:12.5px;">Distance: ${donor.distance} km</span><br>
+                        ${donor.district ? `<small style="color:#64748B;">${escapeHtml(donor.district)}</small><br>` : ""}
+                        ${donor.dms ? `<small style="color:#64748B;">${escapeHtml(donor.dms)}</small><br>` : ""}
+                        <a href="/Profile/View/${encodeURIComponent(donor.id)}" class="btn btn-sm btn-success mt-2 w-100 text-white">View Profile</a>
+                    </div>
+                `;
 
-        var marker = L.marker([donor.lat, donor.lng]).addTo(map);
+                marker.bindPopup(popupHtml);
+                markerByIndex[donor.index] = marker;
+                bounds.push([donor.lat, donor.lng]);
 
-        var popupHtml = `
-            <div style='min-width:180px'>
-                <strong>${donor.name}</strong><br>
-                Distance: ${donor.distance} km<br>
-                ${donor.dms ? `<small>${donor.dms}</small><br>` : ""}
-                <a href='/Profile/View/${donor.id}' class='btn btn-sm btn-primary mt-1'>View Profile</a>
-            </div>
-        `;
+                L.polyline(
+                    [[searchLat, searchLng], [donor.lat, donor.lng]],
+                    { color: '#15803D', weight: 1.5, opacity: 0.45, dashArray: '5, 6' }
+                ).addTo(map);
+            });
 
-        marker.bindPopup(popupHtml);
-        bounds.push([donor.lat, donor.lng]);
+            if (bounds.length > 1) {
+                map.fitBounds(bounds, { padding: [45, 45] });
+            }
 
-        // Polyline from user to donor
-        L.polyline(
-            [[searchLat, searchLng], [donor.lat, donor.lng]],
-            { color: 'blue', weight: 1, opacity: 0.5 }
-        ).addTo(map);
-    });
-
-    // Auto-fit map to all markers
-    if (bounds.length > 0) {
-        map.fitBounds(bounds, { padding: [40, 40] });
-    }
-</script>
+            document.querySelectorAll("tr[data-donor-index]").forEach(function (row) {
+                row.addEventListener("click", function () {
+                    const idx = this.getAttribute("data-donor-index");
+                    const marker = markerByIndex[idx];
+                    if (marker) {
+                        map.setView(marker.getLatLng(), 14);
+                        marker.openPopup();
+                    }
+                });
+            });
+        })();
+    </script>
+}

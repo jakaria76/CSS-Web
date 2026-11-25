@@ -1,0 +1,335 @@
+/* =========================================================
+   CONSCIOUS STUDENT SOCIETY (CSS) — SHADCN/UI COMMITTEE
+   ========================================================= */
+
+.committee-hero {
+    background-color: #fafafa;
+    background-image: radial-gradient(rgba(9, 9, 11, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+    padding: 36px 0 42px;
+}
+
+.committee-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+}
+
+.committee-breadcrumb a {
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.committee-breadcrumb a:hover { text-decoration: underline; }
+
+.committee-hero-title {
+    font-size: clamp(1.65rem, 2.8vw, 2.2rem);
+    font-weight: 700;
+    color: var(--foreground);
+    margin: 0 0 6px;
+}
+
+.committee-hero-sub {
+    font-size: 0.94rem;
+    color: var(--muted-foreground);
+    margin: 0;
+    max-width: 580px;
+}
+
+.committee-summary-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 18px;
+    color: var(--foreground);
+    box-shadow: var(--css-shadow-xs);
+}
+
+.committee-summary-pill i {
+    color: var(--css-primary);
+    font-size: 1.25rem;
+}
+
+.committee-summary-num {
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.committee-summary-label {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+/* ==================== TOOLBAR + SHADCN SEGMENTED TABS ==================== */
+.committee-toolbar {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 24px;
+    box-shadow: var(--css-shadow-xs);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.committee-search-wrap {
+    position: relative;
+    flex: 1 1 260px;
+    max-width: 360px;
+}
+
+.committee-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+    font-size: 13.5px;
+    pointer-events: none;
+}
+
+.committee-search-input {
+    width: 100%;
+    height: 38px;
+    padding: 6px 12px 6px 36px;
+    border-radius: var(--radius);
+    border: 1px solid var(--input);
+    background: #ffffff;
+    font-size: 13.5px;
+    color: var(--foreground);
+    box-shadow: var(--css-shadow-xs);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.committee-search-input:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--ring);
+}
+
+/* shadcn TabsList Container */
+.committee-filters {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    background: var(--muted);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.committee-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    background: transparent;
+    border: none;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+
+.committee-filter-pill:hover {
+    color: var(--foreground);
+}
+
+.committee-filter-pill.is-active {
+    background: #ffffff;
+    color: var(--foreground);
+    font-weight: 600;
+    box-shadow: var(--css-shadow-xs);
+}
+
+.committee-count-tag {
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(9, 9, 11, 0.06);
+    color: var(--muted-foreground);
+}
+
+.committee-filter-pill.is-active .committee-count-tag {
+    background: var(--css-primary-soft);
+    color: var(--css-primary);
+}
+
+/* ==================== MEMBER CARDS ==================== */
+.committee-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 18px 18px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--css-shadow-xs);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.committee-card.is-top-leader {
+    border-top: 3px solid var(--css-primary);
+}
+
+.committee-card:hover {
+    border-color: #a1a1aa;
+    box-shadow: var(--css-shadow-sm);
+}
+
+.committee-avatar-wrap {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    padding: 2px;
+    border: 1.5px solid var(--border);
+    background: #ffffff;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.committee-card.is-top-leader .committee-avatar-wrap {
+    border-color: var(--css-primary);
+}
+
+.committee-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+.committee-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--muted);
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.committee-card.is-top-leader .committee-avatar-fallback {
+    background: var(--css-primary-soft);
+    color: var(--css-primary);
+}
+
+.committee-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0 0 2px;
+}
+
+.committee-name-bn {
+    font-size: 0.82rem;
+    color: var(--muted-foreground);
+    margin: 0 0 8px;
+}
+
+.committee-role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--muted);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+}
+
+.committee-card.is-top-leader .committee-role-badge {
+    background: var(--css-primary-soft);
+    color: var(--css-primary-dark);
+    border-color: var(--css-primary-border);
+}
+
+.committee-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-bottom: 14px;
+}
+
+.committee-meta-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.committee-profile-btn {
+    margin-top: auto;
+    width: 100%;
+    padding: 7px 12px;
+    border-radius: var(--radius);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--foreground) !important;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: var(--css-shadow-xs);
+    transition: background-color 0.15s ease;
+}
+
+.committee-profile-btn:hover {
+    background: var(--muted);
+}
+
+.committee-empty {
+    background: #fafafa;
+    border: 1px dashed #d4d4d8;
+    border-radius: 12px;
+    padding: 44px 20px;
+    text-align: center;
+    color: var(--muted-foreground);
+}
+
+.committee-empty i {
+    font-size: 2rem;
+    color: var(--css-primary);
+    margin-bottom: 10px;
+}
+
+@media (max-width: 767.98px) {
+    .committee-hero { padding: 28px 0 32px; }
+    .committee-toolbar { padding: 12px; }
+    .committee-search-wrap { max-width: 100%; }
+}

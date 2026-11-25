@@ -1,42 +1,149 @@
 ﻿@model CSS.ViewModels.RegisterViewModel
 @{
     ViewData["Title"] = "Register";
-    ViewData["FullScreen"] = true;
+    ViewData["BrandHeadline"] = "Become a Member of Conscious Student Society";
+    ViewData["BrandDescription"] = "Create your free member account to connect with fellow volunteers, register for events, and support blood donation drives.";
+    var bloodGroups = new[] { "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-" };
 }
 
-<link rel="stylesheet" href="~/css/register.css" />
+<link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
 
-<div class="auth-full-bg register-bg">
-    <div class="auth-card">
+<section class="auth-page-wrapper">
+    <div class="auth-split-card">
 
-        <h2 class="auth-title">Create Account</h2>
-        <p class="auth-subtitle">Join the Conscious Student Society</p>
+        <partial name="_AuthBrandPanel" />
 
-        <form asp-controller="Account" asp-action="Register" method="post">
-            @Html.AntiForgeryToken()
-
-            <div class="mb-3">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control auth-input" placeholder="Enter email" />
+        <div class="auth-form-panel">
+            <div class="auth-mobile-brand">
+                <img src="~/images/csslogo.png" alt="CSS Logo" />
+                <span>CONSCIOUS STUDENT SOCIETY</span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Password"></label>
-                <input asp-for="Password" type="password" class="form-control auth-input" placeholder="Create password" />
-            </div>
+            <h1 class="auth-heading">Create Account</h1>
+            <p class="auth-subheading">Join our student welfare community in a few steps</p>
 
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword"></label>
-                <input asp-for="ConfirmPassword" type="password" class="form-control auth-input" placeholder="Confirm password" />
-            </div>
+            <form asp-controller="Account" asp-action="Register" method="post" novalidate>
+                @Html.AntiForgeryToken()
 
-            <button type="submit" class="btn auth-btn w-100">Register</button>
+                <div asp-validation-summary="All" class="auth-validation-summary" role="alert"></div>
 
-            <div class="text-center mt-3">
+                <div class="mb-3">
+                    <label asp-for="FullName" class="auth-label"></label>
+                    <div class="auth-input-group">
+                        <i class="fa-regular fa-user auth-input-icon"></i>
+                        <input asp-for="FullName"
+                               autocomplete="name"
+                               class="auth-field"
+                               placeholder="Enter your full name" />
+                    </div>
+                    <span asp-validation-for="FullName" class="auth-field-error"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="auth-label"></label>
+                    <div class="auth-input-group">
+                        <i class="fa-regular fa-envelope auth-input-icon"></i>
+                        <input asp-for="Email"
+                               type="email"
+                               autocomplete="email"
+                               class="auth-field"
+                               placeholder="you@example.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="auth-field-error"></span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-7">
+                        <label asp-for="PhoneNumber" class="auth-label">Phone Number <span class="text-muted fw-normal">(Optional)</span></label>
+                        <div class="auth-input-group">
+                            <i class="fa-solid fa-phone auth-input-icon"></i>
+                            <input asp-for="PhoneNumber"
+                                   type="tel"
+                                   autocomplete="tel"
+                                   class="auth-field"
+                                   placeholder="01XXXXXXXXX" />
+                        </div>
+                        <span asp-validation-for="PhoneNumber" class="auth-field-error"></span>
+                    </div>
+
+                    <div class="col-sm-5">
+                        <label asp-for="BloodGroup" class="auth-label">Blood Group <span class="text-muted fw-normal">(Optional)</span></label>
+                        <div class="auth-input-group">
+                            <i class="fa-solid fa-droplet auth-input-icon"></i>
+                            <select asp-for="BloodGroup" class="auth-field">
+                                <option value="">Select</option>
+                                @foreach (var bg in bloodGroups)
+                                {
+                                    <option value="@bg">@bg</option>
+                                }
+                            </select>
+                        </div>
+                        <span asp-validation-for="BloodGroup" class="auth-field-error"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <label asp-for="Password" class="auth-label"></label>
+                        <div class="auth-input-group">
+                            <i class="fa-solid fa-lock auth-input-icon"></i>
+                            <input asp-for="Password"
+                                   id="regPassword"
+                                   type="password"
+                                   autocomplete="new-password"
+                                   class="auth-field has-toggle"
+                                   placeholder="Min 6 characters" />
+                            <button type="button"
+                                    class="auth-password-toggle"
+                                    data-toggle-password="regPassword"
+                                    aria-label="Show password">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="auth-field-error"></span>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label asp-for="ConfirmPassword" class="auth-label"></label>
+                        <div class="auth-input-group">
+                            <i class="fa-solid fa-shield-halved auth-input-icon"></i>
+                            <input asp-for="ConfirmPassword"
+                                   id="regConfirmPassword"
+                                   type="password"
+                                   autocomplete="new-password"
+                                   class="auth-field has-toggle"
+                                   data-match-password="regPassword"
+                                   data-match-hint="regMatchHint"
+                                   placeholder="Repeat password" />
+                            <button type="button"
+                                    class="auth-password-toggle"
+                                    data-toggle-password="regConfirmPassword"
+                                    aria-label="Show password">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="regMatchHint" class="auth-match-hint"></div>
+                        <span asp-validation-for="ConfirmPassword" class="auth-field-error"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Create Account</span>
+                </button>
+            </form>
+
+            <partial name="_SocialLoginPartial" />
+
+            <p class="auth-switch-text mb-0">
                 Already have an account?
-                <a asp-controller="Account" asp-action="Login" class="auth-link">Login</a>
-            </div>
-
-        </form>
+                <a asp-controller="Account" asp-action="Login" class="auth-link">Sign In</a>
+            </p>
+        </div>
     </div>
-</div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/auth.js" asp-append-version="true"></script>
+}

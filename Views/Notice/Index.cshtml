@@ -1,200 +1,168 @@
 ﻿@model IEnumerable<CSS.Models.Notice>
+@{
+    ViewData["Title"] = "Notices";
+    var notices = Model?.ToList() ?? new List<CSS.Models.Notice>();
+}
 
-<style>
-    /* ================= PAGE HEADER ================= */
-    .notice-header h2 {
-        font-weight: 700;
-        color: #1b2a6b;
-        margin-bottom: 5px;
-    }
+<link rel="stylesheet" href="~/css/notice.css" asp-append-version="true" />
 
-    .notice-header i {
-        color: #ff5252;
-    }
+<!-- HERO -->
+<section class="notice-hero">
+    <div class="container position-relative" style="z-index:2;">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="notice-breadcrumb">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <span>Notices</span>
+                </div>
+                <h1 class="notice-hero-title">Official Notice Board</h1>
+                <p class="notice-hero-sub">
+                    সচেতন ছাত্র সমাজ (CSS)-এর সর্বশেষ প্রকাশিত সকল অফিসিয়াল বিজ্ঞপ্তি ও ঘোষণা।
+                </p>
+            </div>
 
-    .notice-header p {
-        margin: 0;
-    }
+            <div class="col-lg-5">
+                <div class="d-flex flex-wrap gap-3 justify-content-lg-end align-items-center">
+                    <div class="notice-kpi-pill">
+                        <i class="fa-solid fa-bullhorn"></i>
+                        <div>
+                            <div class="fw-bold fs-5 lh-1">@notices.Count</div>
+                            <div class="small" style="color:var(--muted-foreground);">Published Notices</div>
+                        </div>
+                    </div>
 
-    /* ================= CARD BOX ================= */
-    .notice-card {
-        background: #ffffff;
-        border-radius: 12px;
-        border: 1px solid #e3e6f0;
-        padding: 20px;
-    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="NoticeManagement" asp-action="Index" class="btn-css-primary py-2 px-3">
+                            <i class="fa-solid fa-sliders"></i>
+                            <span>Manage Notices</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    /* ================= TABLE ================= */
-    .notice-table thead tr {
-        background: #f1f4ff;
-        color: #002b80;
-    }
+<div class="container pb-5">
 
-    .notice-table th {
-        font-weight: 700;
-        border-color: #dfe2f5 !important;
-        padding: 10px;
-    }
+    <!-- SEARCH TOOLBAR -->
+    <div class="notice-toolbar mb-4">
+        <div class="notice-search-wrap">
+            <i class="fa-solid fa-magnifying-glass notice-search-icon"></i>
+            <input id="noticeSearchInput"
+                   type="search"
+                   placeholder="শিরোনাম বা তারিখ দিয়ে বিজ্ঞপ্তি খুঁজুন..."
+                   class="notice-search-input"
+                   aria-label="Search notices" />
+        </div>
 
-    .notice-table td {
-        border-color: #eef0fa !important;
-        vertical-align: middle !important;
-        font-size: 15px;
-        padding: 10px;
-    }
-
-    /* Hover Effect */
-    .notice-table tbody tr:hover {
-        background: #f9fbff;
-        transform: scale(1.002);
-        transition: 0.15s ease-in-out;
-    }
-
-    /* Title column icon + text */
-    .title-col {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        word-break: break-word;
-    }
-
-    /* PDF Button */
-    .pdf-btn {
-        font-size: 13px;
-        border-radius: 6px;
-        padding: 5px 10px;
-        transition: 0.2s;
-    }
-
-        .pdf-btn:hover {
-            background: #ff5252;
-            color: white !important;
-            border-color: #ff5252;
-        }
-
-    /* ================= MOBILE OPTIMIZATION (FINAL) ================= */
-    @@media (max-width: 576px) {
-        /* Reduce font & padding */
-        .notice-table th, .notice-table td
-
-    {
-        padding: 6px 5px !important;
-        font-size: 13px !important;
-        white-space: normal !important;
-    }
-
-    /* SL column */
-    .notice-table th:nth-child(1),
-    .notice-table td:nth-child(1) {
-        width: 28px !important;
-        text-align: center !important;
-        vertical-align: top !important;
-    }
-
-    /* Date column */
-    .notice-table th:nth-child(3),
-    .notice-table td:nth-child(3) {
-        width: 85px !important;
-        text-align: center !important;
-        white-space: nowrap !important;
-        font-size: 12px !important;
-        vertical-align: top !important;
-    }
-
-    /* Title formatting */
-    .title-col {
-        display: block !important;
-        font-size: 13px !important;
-        line-height: 1.35 !important;
-        margin-bottom: 6px;
-        word-break: break-word;
-    }
-
-        .title-col i {
-            font-size: 14px;
-            margin-right: 4px;
-        }
-
-    /* PDF button below title neatly */
-    .pdf-btn {
-        margin-top: 4px;
-        padding: 4px 7px !important;
-        font-size: 11px !important;
-    }
-
-    /* Keep table layout proper */
-    .notice-table tbody tr {
-        display: table-row !important;
-        border-bottom: 1px solid #eef0fa !important;
-    }
-
-        .notice-table tbody tr td {
-            display: table-cell !important;
-        }
-
-    /* Reduce card padding for mobile */
-    .notice-card {
-        padding: 14px !important;
-    }
-
-    }
-</style>
-
-
-<div class="container py-4">
-
-    <!-- PAGE HEADER -->
-    <div class="notice-header mb-4">
-        <h2><i class="fa-solid fa-bullhorn"></i> বিজ্ঞপ্তিসমূহ</h2>
-        <p class="text-muted">সর্বশেষ প্রকাশিত সকল বিজ্ঞপ্তির তালিকা</p>
+        <div class="small fw-semibold text-muted" id="noticeResultCount">
+            Showing @notices.Count notice(s)
+        </div>
     </div>
 
-    <!-- TABLE CARD -->
-    <div class="notice-card shadow-sm p-3">
+    <!-- NOTICE TABLE CARD -->
+    <div class="notice-board-card">
+        <div class="notice-board-topbar">
+            <span><i class="fa-regular fa-clipboard me-2"></i>বিজ্ঞপ্তিসমূহের তালিকা</span>
+            <span class="badge bg-white text-dark rounded-pill px-3 py-1" style="font-size:12px;">PDF Archive</span>
+        </div>
 
-        <table class="table notice-table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th style="width:60px;">SL</th>
-                    <th>শিরোনাম</th>
-                    <th style="width:150px;">তারিখ</th>
-                    <th style="width:120px;">ডাউনলোড</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int i = 1;
-                }
+        @if (notices.Any())
+        {
+            <div class="table-responsive">
+                <table class="table notice-board-table align-middle" id="noticeTable">
+                    <thead>
+                        <tr>
+                            <th style="width:70px;">ক্রমিক</th>
+                            <th>বিজ্ঞপ্তির শিরোনাম</th>
+                            <th style="width:170px;">প্রকাশের তারিখ</th>
+                            <th style="width:130px;" class="text-end">ফাইল</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int i = 1;
+                            foreach (var n in notices)
+                            {
+                                <tr class="notice-row">
+                                    <td><span class="notice-sl-chip">@i</span></td>
+                                    <td>
+                                        <a asp-controller="Notice"
+                                           asp-action="ViewPdf"
+                                           asp-route-id="@n.Id"
+                                           target="_blank"
+                                           class="notice-title-link">
+                                            <i class="fa-regular fa-file-lines"></i>
+                                            <span>@n.Title</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="notice-date-pill">
+                                            <i class="fa-regular fa-calendar"></i>
+                                            @n.PublishDate.ToString("dd MMM yyyy")
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-controller="Notice"
+                                           asp-action="ViewPdf"
+                                           asp-route-id="@n.Id"
+                                           class="notice-pdf-btn"
+                                           target="_blank">
+                                            <i class="fa-solid fa-file-pdf"></i>
+                                            <span>View PDF</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
 
-                @foreach (var n in Model)
-                {
-                    <tr>
-                        <td class="fw-bold">@i</td>
-
-                        <td class="title-col">
-                            <i class="fa-solid fa-file-lines text-primary me-2"></i>
-                            @n.Title
-                        </td>
-
-                        <td class="text-muted">
-                            @n.PublishDate.ToString("dd MMM yyyy")
-                        </td>
-
-                        <td>
-                            <a asp-controller="Notice"
-                               asp-action="ViewPdf"
-                               asp-route-id="@n.Id"
-                               class="btn btn-sm btn-outline-danger pdf-btn"
-                               target="_blank">
-                                <i class="fa-solid fa-file-pdf"></i> PDF
-                            </a>
-
-                        </td>
-                    </tr>
-                    i++;
-                }
-            </tbody>
-        </table>
-
+            <div id="noNoticeSearch" class="notice-empty d-none">
+                <i class="fa-solid fa-magnifying-glass d-block"></i>
+                <h6 class="fw-bold text-dark mb-1">কোনো বিজ্ঞপ্তি পাওয়া যায়নি</h6>
+                <p class="small mb-0">অন্য কোনো শব্দ দিয়ে খুঁজে দেখুন।</p>
+            </div>
+        }
+        else
+        {
+            <div class="notice-empty">
+                <i class="fa-regular fa-folder-open d-block"></i>
+                <h6 class="fw-bold text-dark mb-1">এখনো কোনো বিজ্ঞপ্তি প্রকাশিত হয়নি</h6>
+                <p class="small mb-0">নতুন বিজ্ঞপ্তি প্রকাশিত হলে এখানে তালিকাভুক্ত হবে।</p>
+            </div>
+        }
     </div>
+
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const input = document.getElementById("noticeSearchInput");
+            const rows = document.querySelectorAll(".notice-row");
+            const countEl = document.getElementById("noticeResultCount");
+            const emptyEl = document.getElementById("noNoticeSearch");
+            if (!input || !rows.length) return;
+
+            input.addEventListener("input", function () {
+                const q = this.value.trim().toLowerCase();
+                let visible = 0;
+
+                rows.forEach(row => {
+                    const match = row.innerText.toLowerCase().includes(q);
+                    row.style.display = match ? "" : "none";
+                    if (match) visible++;
+                });
+
+                if (countEl) countEl.textContent = `Showing ${visible} notice(s)`;
+                if (emptyEl) emptyEl.classList.toggle("d-none", visible > 0);
+            });
+        })();
+    </script>
+}

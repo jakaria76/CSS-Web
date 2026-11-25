@@ -1,0 +1,555 @@
+/* =========================================================
+   CONSCIOUS STUDENT SOCIETY (CSS) — SHADCN/UI HOME PAGE
+   ========================================================= */
+
+/* ==================== HERO SECTION (Clean Light Editorial) ==================== */
+.home-hero {
+    position: relative;
+    background-color: #fafafa;
+    background-image:
+        radial-gradient(at 80% 15%, rgba(21, 128, 61, 0.08) 0, transparent 50%),
+        radial-gradient(rgba(9, 9, 11, 0.06) 1px, transparent 1px);
+    background-size: 100% 100%, 24px 24px;
+    border-bottom: 1px solid var(--border);
+    padding: 52px 0 60px;
+    overflow: hidden;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    box-shadow: var(--css-shadow-xs);
+    margin-bottom: 16px;
+}
+
+.hero-badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--css-primary-bright);
+}
+
+.hero-title {
+    font-size: clamp(2rem, 3.4vw, 2.85rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin-bottom: 14px;
+    color: var(--foreground);
+}
+
+.hero-title-accent {
+    color: var(--css-primary);
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--muted-foreground);
+    margin-bottom: 24px;
+    max-width: 520px;
+}
+
+.hero-cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.hero-btn-primary {
+    background-color: var(--css-primary);
+    color: #ffffff !important;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none !important;
+    box-shadow: var(--css-shadow-xs);
+    transition: background-color 0.15s ease;
+}
+
+.hero-btn-primary:hover {
+    background-color: var(--css-primary-dark);
+}
+
+.hero-btn-secondary {
+    background: #ffffff;
+    color: var(--foreground) !important;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none !important;
+    box-shadow: var(--css-shadow-xs);
+    transition: background-color 0.15s ease;
+}
+
+.hero-btn-secondary:hover {
+    background: var(--muted);
+}
+
+/* Live DB Stats Strip inside Hero */
+.hero-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    max-width: 540px;
+}
+
+.hero-stat-box {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 12px;
+    box-shadow: var(--css-shadow-xs);
+}
+
+.hero-stat-num {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--foreground);
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+
+.hero-stat-label {
+    font-size: 11.5px;
+    color: var(--muted-foreground);
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+/* Hero Carousel */
+.hero-slider-frame {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--css-shadow-md);
+    border: 1px solid var(--border);
+    background: #ffffff;
+}
+
+.css-slide-img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    display: block;
+}
+
+.hero-slider-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 36px 20px 16px;
+    background: linear-gradient(to top, rgba(9, 9, 11, 0.86), transparent);
+    color: #ffffff;
+    pointer-events: none;
+}
+
+.hero-slider-caption span {
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #4ade80;
+}
+
+.hero-slider-caption h5 {
+    font-size: 0.96rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 4px 0 0;
+}
+
+@media (max-width: 991.98px) {
+    .home-hero { padding: 34px 0 42px; }
+    .css-slide-img { height: 270px; }
+}
+
+@media (max-width: 575.98px) {
+    .hero-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .css-slide-img { height: 210px; }
+}
+
+/* ==================== CORE PILLARS / SERVICES ==================== */
+.pillars-section {
+    padding-top: 36px;
+}
+
+.pillar-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    height: 100%;
+    text-decoration: none !important;
+    color: var(--foreground);
+    box-shadow: var(--css-shadow-xs);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.pillar-card:hover {
+    border-color: #a1a1aa;
+    box-shadow: var(--css-shadow-sm);
+    background: #fafafa;
+}
+
+.pillar-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: #fafafa;
+}
+
+.pillar-icon.red { color: #dc2626; }
+.pillar-icon.green { color: var(--css-primary); }
+.pillar-icon.gold { color: #d97706; }
+.pillar-icon.slate { color: #09090b; }
+
+.pillar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0 0 3px;
+}
+
+.pillar-desc {
+    font-size: 13px;
+    color: var(--muted-foreground);
+    margin: 0;
+    line-height: 1.45;
+}
+
+/* ==================== SECTION HEADERS ==================== */
+.home-section {
+    padding: 48px 0 8px;
+}
+
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.section-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--css-primary);
+    margin-bottom: 4px;
+}
+
+.section-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.section-view-all {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--foreground) !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: var(--radius);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    box-shadow: var(--css-shadow-xs);
+    transition: background-color 0.15s ease;
+}
+
+.section-view-all:hover {
+    background: var(--muted);
+}
+
+/* ==================== NOTICE BOARD CARD (shadcn Table) ==================== */
+.home-notice-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--css-shadow-sm);
+    overflow: hidden;
+}
+
+.home-notice-topbar {
+    background: #ffffff;
+    color: var(--foreground);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.home-notice-table {
+    width: 100%;
+    margin: 0;
+}
+
+.home-notice-table thead th {
+    background: #fafafa;
+    color: var(--muted-foreground);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.home-notice-table tbody td {
+    padding: 13px 18px;
+    font-size: 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+}
+
+.home-notice-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.home-notice-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.notice-sl-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--muted);
+    color: var(--foreground);
+    font-weight: 600;
+    font-size: 12.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notice-title-link {
+    font-weight: 500;
+    color: var(--foreground);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.notice-title-link:hover {
+    color: var(--css-primary);
+    text-decoration: underline;
+}
+
+.date-badge {
+    background: var(--muted);
+    color: var(--css-slate);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 12px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.notice-pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 7px;
+    background: #ffffff;
+    color: var(--foreground) !important;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-decoration: none !important;
+    border: 1px solid var(--border);
+    box-shadow: var(--css-shadow-xs);
+    transition: background-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.notice-pdf-btn i {
+    color: var(--css-primary);
+}
+
+.notice-pdf-btn:hover {
+    background: var(--muted);
+}
+
+.home-pagination-wrap {
+    padding: 12px 18px;
+    background: #fafafa;
+    border-top: 1px solid var(--border);
+}
+
+.pagination .page-link {
+    background: #ffffff;
+    border-radius: 7px;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 6px 12px;
+    margin: 0 2px;
+    color: var(--foreground);
+    border: 1px solid var(--border);
+}
+
+.pagination .page-link:hover {
+    background: var(--muted);
+}
+
+.pagination .active .page-link {
+    background: var(--css-primary) !important;
+    color: #ffffff !important;
+    border-color: var(--css-primary) !important;
+}
+
+/* ==================== VIDEO GALLERY CARDS ==================== */
+.video-card {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--css-shadow-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-card:hover {
+    border-color: #d4d4d8;
+    box-shadow: var(--css-shadow-md);
+}
+
+.video-card-body {
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.video-play-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: var(--css-primary-soft);
+    color: var(--css-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ==================== EMPTY STATE CARD ==================== */
+.home-empty-state {
+    background: #fafafa;
+    border: 1px dashed #d4d4d8;
+    border-radius: 12px;
+    padding: 36px 20px;
+    text-align: center;
+    color: var(--muted-foreground);
+}
+
+.home-empty-state i {
+    font-size: 1.75rem;
+    color: var(--css-primary);
+    margin-bottom: 10px;
+}
+
+/* ==================== VOLUNTEER / BLOOD CTA BANNER ==================== */
+.home-cta-section {
+    padding: 46px 0 56px;
+}
+
+.home-cta-box {
+    position: relative;
+    background: #09090b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    padding: 38px 34px;
+    color: #ffffff;
+    box-shadow: var(--css-shadow-md);
+    overflow: hidden;
+}
+
+.home-cta-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 90% 20%, rgba(22, 163, 74, 0.25), transparent 48%);
+    pointer-events: none;
+}
+
+.home-cta-box h3 {
+    font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.home-cta-box p {
+    color: #a1a1aa;
+    margin-bottom: 0;
+    max-width: 560px;
+    font-size: 0.95rem;
+}
+
+.cta-white-btn {
+    position: relative;
+    z-index: 2;
+    background: var(--css-primary);
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 11px 22px;
+    border-radius: var(--radius);
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.cta-white-btn:hover {
+    background: var(--css-primary-bright);
+}

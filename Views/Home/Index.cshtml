@@ -6,369 +6,412 @@
     int totalPages = ViewBag.TotalPages ?? 1;
     var upcoming = ViewBag.UpcomingEvents as List<CSS.Models.Event>;
     var videos = ViewBag.VideoList as List<CSS.Models.Video>;
+
+    int totalMembers = ViewBag.TotalMembers ?? 0;
+    int eligibleDonors = ViewBag.EligibleDonors ?? 0;
+    int totalEvents = ViewBag.TotalEvents ?? 0;
+    int totalNotices = ViewBag.TotalNotices ?? 0;
 }
 
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 
-<style>
-    /* ================= GLOBAL ================= */
-    body {
-        background: #f7f9ff;
-    }
+<!-- ==================== HERO SHOWCASE + SLIDER ==================== -->
+<section class="home-hero">
+    <div class="container position-relative" style="z-index:2;">
+        <div class="row align-items-center g-4 g-lg-5">
 
-    /* ================= SLIDER ================= */
-    .css-slide-img {
-        width: 100%;
-        height: 450px;
-        object-fit: cover;
-        border-radius: 14px;
-        display: block;
-    }
+            <!-- Left Column: Brand Mission, CTAs & Live Stats -->
+            <div class="col-lg-6">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    <span>#RedForJustice • সচেতন ছাত্র সমাজ</span>
+                </div>
 
-    @@media (max-width: 768px) {
-        .css-slide-img
+                <h1 class="hero-title">
+                    মানবতার সেবায় ঐক্যবদ্ধ <span class="hero-title-accent">সচেতন ছাত্র সমাজ</span>
+                </h1>
 
-    {
-        height: 220px;
-    }
+                <p class="hero-subtitle">
+                    গরিব ও মেধাবী শিক্ষার্থী সহায়তা, জরুরি রক্তদান সেবা এবং সামাজিক কল্যাণমূলক কাজে নিবেদিত একটি সম্পূর্ণ অরাজনৈতিক ছাত্র সংগঠন।
+                </p>
 
-    }
-
-    @@media (max-width: 480px) {
-        .css-slide-img
-
-    {
-        height: 140px;
-        border-radius: 10px;
-    }
-
-    }
-
-
-    /* ================= NOTICE CARD ================= */
-    .notice-card {
-        background: #ffffff;
-        border-radius: 18px;
-        border: 1px solid #e2e6f4;
-        box-shadow: 0 8px 18px rgba(0,0,0,0.06);
-        padding: 20px;
-    }
-
-    .notice-header {
-        background: linear-gradient(90deg, #203a93, #4a7fff);
-        color: white;
-        padding: 12px 16px;
-        font-size: 18px;
-        font-weight: 700;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-
-    /* ================= NOTICE TABLE ================= */
-
-    .notice-table-wrapper {
-        overflow: hidden; /* TABLE NEVER SCROLL */
-        width: 100%;
-    }
-
-    .notice-table {
-        width: 100%;
-        min-width: 100%;
-    }
-
-        .notice-table th,
-        .notice-table td {
-            padding: 10px 6px;
-            font-size: 15px;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-
-
-    /* ================= DESKTOP TITLE (FULL WIDTH) ================= */
-    .notice-title {
-        display: inline-block;
-        max-width: none; /* DESKTOP → Full title */
-        overflow: visible; /* DESKTOP → No scroll */
-        white-space: nowrap;
-    }
-
-
-    /* ================= MOBILE VIEW (Scroll Title) ================= */
-    @@media (max-width: 576px) {
-        .notice-title
-
-    {
-        max-width: 110px; /* Smaller preview */
-        overflow-x: auto; /* Scroll enabled */
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .notice-title::-webkit-scrollbar {
-        height: 4px;
-    }
-
-    .notice-title::-webkit-scrollbar-thumb {
-        background: #bfc3c7;
-        border-radius: 10px;
-    }
-
-    }
-
-
-    /* Hover highlight */
-    .notice-table tbody tr:hover {
-        background: #f3f6ff;
-        transition: 0.25s;
-    }
-
-    /* DATE BADGE */
-    .date-badge {
-        background: #dce4ff;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-weight: 700;
-        white-space: nowrap;
-        font-size: 13px;
-    }
-
-
-    /* ================= PAGINATION ================= */
-    .pagination .page-link {
-        background: white;
-        border-radius: 10px;
-        font-weight: 600;
-        padding: 8px 14px;
-        border: 1px solid #cfd9ff;
-        transition: background 0.2s, color 0.2s;
-    }
-
-        .pagination .page-link:hover {
-            background: #203a93;
-            color: white;
-        }
-
-    .pagination .active .page-link {
-        background: #203a93 !important;
-        color: white !important;
-        border-color: #203a93 !important;
-    }
-
-
-    /* ================= VIDEO CARD ================= */
-    .video-card {
-        border-radius: 10px;
-        overflow: hidden;
-        border: 1px solid #e8eefc;
-    }
-</style>
-
-
-
-
-
-
-
-<!-- ==================== SLIDER ==================== -->
-<div id="cssSlider" class="carousel slide mb-4" data-bs-ride="carousel" aria-label="CSS Slider">
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="/images/slider/slide1.jpg" class="css-slide-img d-block w-100" alt="slide 1" />
-        </div>
-        <div class="carousel-item">
-            <img src="/images/slider/slide2.jpg" class="css-slide-img d-block w-100" alt="slide 2" />
-        </div>
-        <div class="carousel-item">
-            <img src="/images/slider/slide3.jpg" class="css-slide-img d-block w-100" alt="slide 3" />
-        </div>
-    </div>
-
-    <button class="carousel-control-prev" type="button" data-bs-target="#cssSlider" data-bs-slide="prev" aria-label="Previous slide">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    </button>
-
-    <button class="carousel-control-next" type="button" data-bs-target="#cssSlider" data-bs-slide="next" aria-label="Next slide">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    </button>
-</div>
-
-<!-- ==================== NOTICE SECTION ==================== -->
-<section class="container mt-4">
-    <h4 class="fw-bold mb-3" style="color:#203a93;">
-        <i class="bi bi-megaphone-fill text-danger"></i> বিজ্ঞপ্তিসমূহ
-    </h4>
-
-    <div class="notice-card">
-
-        <div class="notice-header">
-            <span>সকল বিজ্ঞপ্তি</span>
-            <i class="bi bi-bell-fill"></i>
-        </div>
-
-        <div class="notice-table-wrapper">
-            <table class="table notice-table align-middle mb-0">
-
-                <thead>
-                    <tr>
-                        <th style="width:40px;">#</th>
-                        <th>শিরোনাম</th>
-                        <th style="width:140px;">প্রকাশিত</th>
-                        <th style="width:60px;" class="text-center">PDF</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @{
-                        int sl = (currentPage - 1) * 5 + 1;
-
-                        foreach (var item in Model)
-                        {
-                            <tr>
-
-                                <td><b>@sl</b></td>
-
-                                <td style="max-width:180px;">
-                                    <span class="notice-title">
-                                        @item.Title
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span class="date-badge">
-                                        @item.PublishDate.ToString("dd/MM/yyyy")
-                                    </span>
-                                </td>
-
-                                <td class="text-center">
-                                    <a asp-controller="Notice"
-                                       asp-action="ViewPdf"
-                                       asp-route-id="@item.Id"
-                                       target="_blank">
-                                        <img src="/images/icons/pdf-icon.png" width="28" />
-                                    </a>
-                                </td>
-
-                            </tr>
-
-                            sl++;
-                        }
-                    }
-                </tbody>
-
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <nav>
-            <ul class="pagination justify-content-center mt-3 mb-0">
-
-                <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("Index", "Home", new { page = currentPage - 1 })">
-                        পূর্ববর্তী
+                <div class="hero-cta-group">
+                    <a asp-controller="Blood" asp-action="Index" class="hero-btn-primary">
+                        <i class="fa-solid fa-droplet"></i>
+                        <span>জরুরি রক্তদাতা খুঁজুন</span>
                     </a>
-                </li>
 
-                @for (int p = 1; p <= totalPages; p++)
-                {
-                    <li class="page-item @(p == currentPage ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", "Home", new { page = p })">@p</a>
-                    </li>
-                }
-
-                <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("Index", "Home", new { page = currentPage + 1 })">
-                        পরবর্তী
+                    <a asp-controller="About" asp-action="Index" class="hero-btn-secondary">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>আমাদের সম্পর্কে</span>
                     </a>
-                </li>
+                </div>
 
-            </ul>
-        </nav>
+                <div class="hero-stats-grid">
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">@totalMembers</div>
+                        <div class="hero-stat-label">নিবন্ধিত সদস্য</div>
+                    </div>
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">@eligibleDonors</div>
+                        <div class="hero-stat-label">সক্রিয় রক্তদাতা</div>
+                    </div>
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">@totalEvents</div>
+                        <div class="hero-stat-label">মোট ইভেন্ট</div>
+                    </div>
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">@totalNotices</div>
+                        <div class="hero-stat-label">প্রকাশিত নোটিশ</div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Right Column: Interactive Activity Carousel -->
+            <div class="col-lg-6">
+                <div class="hero-slider-frame">
+                    <div id="cssSlider" class="carousel slide carousel-fade" data-bs-ride="carousel" aria-label="CSS Activity Slider">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#cssSlider" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#cssSlider" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#cssSlider" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="/images/slider/slide1.jpg" class="css-slide-img" alt="সামাজিক ও ছাত্রকল্যাণ কার্যক্রম" />
+                                <div class="hero-slider-caption">
+                                    <span>Social Welfare</span>
+                                    <h5>শিক্ষার্থী ও অসহায় মানুষের পাশে সচেতন ছাত্র সমাজ</h5>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/images/slider/slide2.jpg" class="css-slide-img" alt="রক্তদান ও স্বেচ্ছাসেবা" />
+                                <div class="hero-slider-caption">
+                                    <span>Blood Service</span>
+                                    <h5>জরুরি মুহূর্তে দ্রুত রক্তদাতা সংযোগ ও মানবিক সহায়তা</h5>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/images/slider/slide3.jpg" class="css-slide-img" alt="যুব নেতৃত্ব ও সচেতনতা" />
+                                <div class="hero-slider-caption">
+                                    <span>Youth Leadership</span>
+                                    <h5>ন্যায়, শিক্ষা ও মানবিকতার জন্য #RedForJustice</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#cssSlider" data-bs-slide="prev" aria-label="Previous slide">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#cssSlider" data-bs-slide="next" aria-label="Next slide">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </section>
 
+<!-- ==================== CORE PILLARS / QUICK ACCESS ==================== -->
+<section class="container pillars-section">
+    <div class="row g-3">
+        <div class="col-lg-3 col-sm-6 col-12">
+            <a asp-controller="Blood" asp-action="Index" class="pillar-card">
+                <div class="pillar-icon red">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div>
+                    <h6 class="pillar-title">রক্তদান সেবা</h6>
+                    <p class="pillar-desc">আপনার এলাকার নিকটবর্তী রক্তদাতা খুঁজুন।</p>
+                </div>
+            </a>
+        </div>
 
+        <div class="col-lg-3 col-sm-6 col-12">
+            <a asp-controller="Events" asp-action="Index" class="pillar-card">
+                <div class="pillar-icon green">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div>
+                    <h6 class="pillar-title">ইভেন্ট ও কার্যক্রম</h6>
+                    <p class="pillar-desc">চলমান ও আসন্ন প্রোগ্রামে অংশ নিন।</p>
+                </div>
+            </a>
+        </div>
 
-<!-- ==================== UPCOMING EVENTS SECTION ==================== -->
-<section class="container mt-5">
-    <h4 class="fw-bold mb-3" style="color:#203a93;">
-        <i class="bi bi-calendar-check-fill text-success"></i> আসন্ন কার্যক্রম
-    </h4>
+        <div class="col-lg-3 col-sm-6 col-12">
+            <a asp-controller="Committee" asp-action="Index" class="pillar-card">
+                <div class="pillar-icon gold">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <div>
+                    <h6 class="pillar-title">কার্যনির্বাহী কমিটি</h6>
+                    <p class="pillar-desc">সংগঠনের দায়িত্বশীল সদস্যদের তালিকা।</p>
+                </div>
+            </a>
+        </div>
 
-    <div class="row g-4">
-        @if (upcoming != null && upcoming.Any())
-        {
-            foreach (var e in upcoming)
+        <div class="col-lg-3 col-sm-6 col-12">
+            <a asp-controller="Gallery" asp-action="Index" class="pillar-card">
+                <div class="pillar-icon slate">
+                    <i class="fa-solid fa-images"></i>
+                </div>
+                <div>
+                    <h6 class="pillar-title">ফটো গ্যালারি</h6>
+                    <p class="pillar-desc">আমাদের মানবিক কাজের স্থিরচিত্রসমূহ।</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== NOTICE BOARD SECTION ==================== -->
+<section class="home-section">
+    <div class="container">
+        <div class="section-header-row">
+            <div>
+                <div class="section-kicker">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Notice Board</span>
+                </div>
+                <h2 class="section-heading">সাম্প্রতিক বিজ্ঞপ্তিসমূহ</h2>
+            </div>
+
+            <a asp-controller="Notice" asp-action="Index" class="section-view-all">
+                <span>সকল বিজ্ঞপ্তি দেখুন</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="home-notice-card">
+            <div class="home-notice-topbar">
+                <span><i class="fa-regular fa-clipboard me-2"></i>অফিসিয়াল নোটিশ বোর্ড</span>
+                <span class="badge bg-white text-dark rounded-pill px-3 py-1" style="font-size:12px;">মোট: @totalNotices</span>
+            </div>
+
+            @if (Model != null && Model.Any())
             {
-                <div class="col-lg-3 col-md-6 col-12">
-                    <partial name="_EventCard" model="e" />
+                <div class="table-responsive">
+                    <table class="table home-notice-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width:65px;">ক্রমিক</th>
+                                <th>বিজ্ঞপ্তির শিরোনাম</th>
+                                <th style="width:165px;">প্রকাশের তারিখ</th>
+                                <th style="width:120px;" class="text-end">সংযুক্তি</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int sl = (currentPage - 1) * 5 + 1;
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td><span class="notice-sl-badge">@sl</span></td>
+                                        <td>
+                                            <a asp-controller="Notice" asp-action="ViewPdf" asp-route-id="@item.Id" target="_blank" class="notice-title-link">
+                                                @item.Title
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="date-badge">
+                                                <i class="fa-regular fa-calendar"></i>
+                                                @item.PublishDate.ToString("dd MMM yyyy")
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-controller="Notice" asp-action="ViewPdf" asp-route-id="@item.Id" target="_blank" class="notice-pdf-btn">
+                                                <i class="fa-solid fa-file-pdf"></i>
+                                                <span>দেখুন</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    sl++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (totalPages > 1)
+                {
+                    <div class="home-pagination-wrap">
+                        <nav aria-label="Notice pagination">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", "Home", new { page = currentPage - 1 })">পূর্ববর্তী</a>
+                                </li>
+
+                                @for (int p = 1; p <= totalPages; p++)
+                                {
+                                    <li class="page-item @(p == currentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", "Home", new { page = p })">@p</a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", "Home", new { page = currentPage + 1 })">পরবর্তী</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="p-5 text-center text-muted">
+                    <i class="fa-regular fa-folder-open fs-2 mb-2 d-block" style="color:var(--css-primary);opacity:0.7;"></i>
+                    <p class="mb-0 fw-semibold">এখনো কোনো বিজ্ঞপ্তি প্রকাশিত হয়নি।</p>
                 </div>
             }
-        }
-        else
-        {
-            <div class="col-12">
-                <p class="text-muted">কোনো আসন্ন ইভেন্ট নেই।</p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== UPCOMING EVENTS SECTION ==================== -->
+<section class="home-section">
+    <div class="container">
+        <div class="section-header-row">
+            <div>
+                <div class="section-kicker">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Upcoming Events</span>
+                </div>
+                <h2 class="section-heading">আসন্ন কার্যক্রম</h2>
             </div>
-        }
+
+            <a asp-controller="Events" asp-action="Index" class="section-view-all">
+                <span>সকল ইভেন্ট দেখুন</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            @if (upcoming != null && upcoming.Any())
+            {
+                foreach (var e in upcoming)
+                {
+                    <div class="col-lg-3 col-md-6 col-12">
+                        <partial name="_EventCard" model="e" />
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="home-empty-state">
+                        <i class="fa-regular fa-calendar-xmark d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">এই মুহূর্তে কোনো আসন্ন ইভেন্ট নেই</h6>
+                        <p class="small mb-3">আমাদের পূর্ববর্তী ইভেন্টগুলো দেখতে ইভেন্টস পেজে ভিজিট করুন।</p>
+                        <a asp-controller="Events" asp-action="Index" class="btn-css-outline btn-sm">
+                            <span>পূর্ববর্তী ইভেন্ট দেখুন</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </section>
 
 <!-- ==================== VIDEO GALLERY SECTION ==================== -->
-<section class="container mt-5 mb-5">
-    <h4 class="fw-bold mb-3" style="color:#203a93;">
-        <i class="bi bi-play-circle-fill text-danger"></i> ভিডিও গ্যালারি
-    </h4>
+<section class="home-section">
+    <div class="container">
+        <div class="section-header-row">
+            <div>
+                <div class="section-kicker">
+                    <i class="fa-solid fa-circle-play"></i>
+                    <span>Media &amp; Stories</span>
+                </div>
+                <h2 class="section-heading">ভিডিও গ্যালারি</h2>
+            </div>
+        </div>
 
-    <div class="row g-4">
-        @if (videos != null && videos.Any())
-        {
-            foreach (var v in videos)
+        <div class="row g-4">
+            @if (videos != null && videos.Any())
             {
-                <div class="col-lg-4 col-md-6 col-12">
-                    <div class="video-card">
-                        <div class="ratio ratio-16x9">
-                            @* Correct Razor interpolation for YouTube id *@
-                            <iframe src="https://www.youtube.com/embed/@(v.YouTubeId)?rel=0"
-                                    title="@v.Title"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen>
-                            </iframe>
+                foreach (var v in videos)
+                {
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="video-card">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.youtube.com/embed/@(v.YouTubeId)?rel=0"
+                                        title="@v.Title"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <div class="video-card-body">
+                                <span class="video-play-dot">
+                                    <i class="fa-solid fa-play"></i>
+                                </span>
+                                <h6 class="mb-0 fw-bold text-truncate" title="@v.Title">@v.Title</h6>
+                            </div>
                         </div>
-                        <div class="p-3">
-                            <h6 class="mb-0">@v.Title</h6>
-                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="home-empty-state">
+                        <i class="fa-solid fa-film d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">এখনো কোনো ভিডিও যুক্ত করা হয়নি</h6>
+                        <p class="small mb-0">শীঘ্রই আমাদের কার্যক্রমের ভিডিও এখানে প্রকাশিত হবে।</p>
                     </div>
                 </div>
             }
-        }
-        else
-        {
-            <div class="col-12">
-                <p class="text-muted">কোনো ভিডিও নেই।</p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== VOLUNTEER / BLOOD DONOR CTA ==================== -->
+<section class="home-cta-section">
+    <div class="container">
+        <div class="home-cta-box">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <h3>স্বেচ্ছাসেবক বা রক্তদাতা হিসেবে আমাদের সাথে যুক্ত হোন</h3>
+                    <p>
+                        একব্যাগ রক্ত বাঁচাতে পারে একটি প্রাণ। আজই সচেতন ছাত্র সমাজের সদস্য হিসেবে নিবন্ধন করুন এবং সমাজের কল্যাণে এগিয়ে আসুন।
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <a asp-controller="Profile" asp-action="Edit" class="cta-white-btn">
+                            <i class="fa-solid fa-user-pen"></i>
+                            <span>প্রোফাইল আপডেট করুন</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="cta-white-btn">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>এখনই নিবন্ধন করুন</span>
+                        </a>
+                    }
+                </div>
             </div>
-        }
+        </div>
     </div>
 </section>
 
 @section Scripts {
     <script>
-        // Ensure Bootstrap's carousel behaves responsively on small screens.
         (function () {
             var slider = document.getElementById('cssSlider');
-            if (!slider) return;
+            if (!slider || typeof bootstrap === 'undefined') return;
 
-            // Pause automatic sliding on small devices for better UX
             if (window.matchMedia('(max-width: 768px)').matches) {
                 var carousel = bootstrap.Carousel.getOrCreateInstance(slider, { interval: false });
                 carousel.pause();
             }
 
-            // Re-evaluate on resize
             window.addEventListener('resize', function () {
                 if (window.matchMedia('(max-width: 768px)').matches) {
                     bootstrap.Carousel.getOrCreateInstance(slider).pause();
