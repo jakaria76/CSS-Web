@@ -1,0 +1,14 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build folders
+bin/
+obj/
+
+# Local secrets (never push to GitHub)
+appsettings.Development.json
+
+# Other
+*.log

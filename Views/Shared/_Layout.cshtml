@@ -1,0 +1,818 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using CSS.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CSS</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+
+<style>
+    /* Notice bar visuals */
+    .notice-bar {
+        display: flex;
+        align-items: center;
+        background: #002b5b;
+        color: white;
+        font-weight: 600;
+        padding: 5px 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .notice-label {
+        background: #ff5252;
+        padding: 5px 10px;
+        margin-right: 10px;
+        border-radius: 4px;
+        white-space: nowrap;
+    }
+
+    /* wrapper with fade overlays */
+    .notice-scroll-wrapper {
+        position: relative;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+        .notice-scroll-wrapper::before,
+        .notice-scroll-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 60px;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .notice-scroll-wrapper::before {
+            left: 0;
+            background: linear-gradient(to right, #002b5b, transparent);
+        }
+
+        .notice-scroll-wrapper::after {
+            right: 0;
+            background: linear-gradient(to left, #002b5b, transparent);
+        }
+
+    /* content: starts off-screen right (padding-left), then translates left by 100% */
+    .notice-content {
+        display: inline-block;
+        white-space: nowrap;
+        padding-left: 100%; /* ensures it starts outside right edge */
+        animation-name: scroll-left;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        font-size: 15px;
+        will-change: transform;
+    }
+
+        .notice-content a {
+            color: #ffeb3b;
+            text-decoration: none;
+            padding: 0 25px;
+        }
+
+            .notice-content a:hover {
+                text-decoration: underline;
+            }
+
+    /* pause on hover */
+    .notice-scroll-wrapper:hover .notice-content {
+        animation-play-state: paused;
+    }
+
+    /* Razor-safe keyframes */
+    @@keyframes scroll-left {
+        0% {
+            transform: translateX(0%);
+        }
+
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+
+    /* ========================================================= */
+    /* ================= FOOTER SECTION ========================= */
+    /* ========================================================= */
+
+    .footer-section {
+        background: #0d1b22;
+        color: #e0e0e0;
+    }
+
+    .footer-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    .footer-text {
+        font-size: 14px;
+        color: #cfd8dc;
+        margin-bottom: 14px;
+    }
+
+    .footer-list li {
+        margin-bottom: 8px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .footer-list i {
+        color: #ff5252;
+    }
+
+    .footer-links a {
+        color: #d0d0d0;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .footer-links a:hover {
+            color: white;
+            margin-left: 4px;
+        }
+
+    .footer-hotline {
+        background: #ff5252;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-top: 14px;
+        color: white;
+    }
+
+    .footer-social a {
+        font-size: 22px;
+        margin-right: 12px;
+        color: #ff5252;
+        transition: 0.3s;
+    }
+
+        .footer-social a:hover {
+            color: #ff1744;
+            transform: scale(1.15);
+        }
+
+    .footer-fb-box {
+        margin-top: 10px;
+    }
+
+    .footer-bottom {
+        background: #091319;
+        font-size: 13px;
+        border-top: 1px solid #1a2a33;
+    }
+
+    /* MOBILE FIXED — Razor-safe media query */
+    @@media (max-width: 768px) {
+        .footer-section {
+            text-align: center;
+        }
+
+        .footer-list li {
+            justify-content: center;
+        }
+
+        .footer-social a {
+            margin-right: 10px;
+        }
+
+        iframe {
+            height: 200px;
+        }
+    }
+
+    
+
+    
+
+    /* ===========================
+       DESKTOP TYPEWRITER (unchanged)
+    =========================== */
+
+    .typewriter {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 3px solid #203a93;
+        width: 0;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: #0a1a5c;
+        font-size: 34px;
+        text-transform: uppercase;
+        animation: typing 3s steps(35) forwards, blink .75s step-end;
+    }
+
+    @@keyframes typing {
+        from
+
+    {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+
+    }
+
+    @@keyframes blink {
+        0%, 100%
+
+    {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: #203a93;
+    }
+
+    }
+
+    .typewriter.finished {
+        border-right: none;
+    }
+
+    /* ===========================
+       MOBILE — NO ANIMATION + CLEAN ALIGNMENT
+    =========================== */
+
+    @@media (max-width: 576px) {
+        /* FIX: CENTER CONTENT CORRECTLY */
+        .banner-text
+
+    {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* horizontally center */
+        justify-content: center;
+        text-align: center;
+        padding: 0 10px; /* prevent touching edges */
+    }
+
+    /* FIX: TITLE PROPER SIZE AND WRAPPING */
+    .typewriter {
+        font-size: 20px !important;
+        letter-spacing: 0px !important;
+        width: auto !important; /* no cut */
+        white-space: normal !important; /* allow line break */
+        overflow: visible !important;
+        border-right: none !important;
+        animation: none !important; /* disable typewriter */
+    }
+
+    .org-title-bn {
+        font-size: 16px !important;
+        margin-top: 3px;
+    }
+
+    .org-subtitle {
+        font-size: 13px !important;
+        margin-top: 2px;
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        /* Top banner area height reduce */
+        .header-banner
+
+    {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+    }
+
+    /* Logo size reduce */
+    .banner-logo {
+        width: 60px !important;
+        height: auto;
+    }
+
+    /* Title spacing reduce */
+    .banner-text {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+        line-height: 2 !important; /* reduce vertical space */
+    }
+
+    .org-title {
+        font-size: 18px !important;
+        margin: 0 !important; /* remove extra gap */
+        padding: 0 !important;
+    }
+
+    .org-title-bn {
+        font-size: 14px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .org-subtitle {
+        font-size: 12px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    }
+
+
+</style>
+
+
+<body>
+
+    <!-- ===== NOTICE BAR ===== -->
+    <!-- ===== NOTICE BAR ===== -->
+    <div class="notice-bar">
+        <div class="notice-label">LATEST NOTICE</div>
+
+        <div class="notice-scroll-wrapper" aria-live="polite">
+            <div class="notice-content" id="noticeContent" role="marquee"></div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <!-- ===== HEADER BANNER ===== -->
+    <!-- ===== HEADER SECTION ===== -->
+    <header class="header-banner text-center">
+        <div class="container banner-flex">
+
+            <!-- LEFT LOGO -->
+            <a asp-controller="Home" asp-action="Index">
+                <img src="~/images/csslogo.png" class="banner-logo" />
+            </a>
+
+            <!-- TEXT AREA -->
+            <div class="banner-text">
+                <h2 class="org-title typewriter">CONSCIOUS STUDENT SOCIETY</h2>
+                <h4 class="org-title-bn">সচেতন ছাত্র সমাজ</h4>
+                <p class="org-subtitle">এটি একটি অরাজনৈতিক সংগঠন</p>
+            </div>
+
+
+            <!-- RIGHT LOGO -->
+            <a asp-controller="Home" asp-action="Index">
+                <img src="~/images/csslogo.png" class="banner-logo" />
+            </a>
+
+        </div>
+    </header>
+
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="css-navbar">
+        <div class="css-navbar-wrapper">
+            <ul class="css-nav-list">
+
+                @* PUBLIC MENU *@
+                @if (!User.Identity?.IsAuthenticated ?? false)
+                {
+                    <li class="css-item"><a class="css-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="About" asp-action="Index">About</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Committee" asp-action="Index">Committee</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Blood" asp-action="Index">Blood</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Events" asp-action="Index">Events</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Gallery" asp-action="Index">Gallery</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Notice" asp-action="Index">Notice</a></li>
+                    <li class="css-item"><a class="css-link login-color" asp-controller="Account" asp-action="Login">Login</a></li>
+                }
+
+                @* ADMIN MENU *@
+                else if (User.IsInRole("Admin"))
+                {
+                    <li class="css-item"><a class="css-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Gallery" asp-action="Index">Gallery</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="About" asp-action="Index">About</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="AboutManagement" asp-action="Index">About Management</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Profile" asp-action="Index">Profile</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Notice" asp-action="Index">Notice</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="NoticeManagement" asp-action="Index">Notice Management</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Blood" asp-action="Index">Blood</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Events" asp-action="Index">Events</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Admin" asp-action="Members">Members</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="VideoManagement" asp-action="Index">Video Management</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Admin" asp-action="Welfare">Welfare</a></li>
+                    <li class="css-item"><button onclick="confirmLogout()" class="css-link logout-btn">Logout</button></li>
+                }
+
+                @* MEMBER MENU (DEFAULT LOGGED-IN USER) *@
+                else
+                {
+                    <li class="css-item"><a class="css-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="About" asp-action="Index">About</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Gallery" asp-action="Index">Gallery</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="VideoManagement" asp-action="Index">Video Management</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Help" asp-action="Request">Help</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Events" asp-action="Index">Events</a></li>
+                    <li class="css-item"><a class="css-link" asp-controller="Profile" asp-action="Index">Profile</a></li>
+
+                    <li class="css-item">
+                        <button onclick="confirmLogout()" class="css-link logout-btn">Logout</button>
+                    </li>
+                }
+
+            </ul>
+        </div>
+    </nav>
+
+
+
+
+
+
+
+
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="p-0 m-0 w-100">
+        @RenderBody()
+    </main>
+
+
+
+
+    <!-- ============ TOP GOOGLE MAP (OPTIONAL) ============ -->
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    }
+
+    @if (currentController == "Home" && currentAction == "Index")
+    {
+        <div class="footer-map-wrapper">
+            <iframe class="footer-map"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3644.2414600006894!2d89.800917!3d24.069222!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDA0JzA5LjIiTiA4OcKwNDgnMDMuMyJF!5e1!3m2!1sen!2sbd!4v1700000000005">
+            </iframe>
+        </div>
+    }
+
+
+    <!-- ============ PREMIUM FOOTER ============ -->
+    <
+    <footer class="footer-section">
+        <div class="container footer-content pt-4 pb-4">
+            <div class="row gy-4">
+
+                <!-- COLUMN 1 : About + Contact -->
+                <div class="col-lg-4 col-md-6 col-12">
+                    <h5 class="footer-title">CONSCIOUS STUDENT SOCIETY</h5>
+
+                    <p class="footer-text">
+                        সচেতন ছাত্র সমাজ একটি অরাজনৈতিক সংগঠন যা গরিব শিক্ষার্থী,
+                        অসহায় মানুষ ও রক্ত সেবায় কাজ করে।
+                    </p>
+
+                    <ul class="footer-list">
+                        <li><i class="fa-solid fa-envelope"></i> consciousstudentsociety@gmail.com</li>
+                        <li><i class="fa-solid fa-phone"></i> +880-1700-000000</li>
+                        <li><i class="fa-solid fa-location-dot"></i> Chouhali, Rajshahi, Bangladesh</li>
+                    </ul>
+
+                    <div class="footer-hotline">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        জরুরি রক্ত সহায়তা: <b>+880-1700-000000</b>
+                    </div>
+                </div>
+
+                <!-- COLUMN 2 : Useful Links -->
+                <div class="col-lg-4 col-md-6 col-12">
+                    <h5 class="footer-title">USEFUL LINKS</h5>
+
+                    <ul class="footer-list footer-links">
+                        <li><a asp-controller="Home" asp-action="Index">হোম</a></li>
+                        <li><a asp-controller="About" asp-action="Index">আমাদের সম্পর্কে</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact">যোগাযোগ</a></li>
+                        <li><a asp-controller="Committee" asp-action="Index">কমিটি</a></li>
+                        <li><a asp-controller="Events" asp-action="Index">ইভেন্টস</a></li>
+                        <li><a asp-controller="Blood" asp-action="Index">রক্ত সেবা</a></li>
+                    </ul>
+                </div>
+
+
+                <!-- COLUMN 3 : Social + Facebook Page Preview -->
+                <div class="col-lg-4 col-md-12 col-12">
+                    <h5 class="footer-title">FOLLOW US</h5>
+
+                    <div class="footer-social mb-3">
+                        <a href="https://www.facebook.com/organizationofcss"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="https://www.youtube.com/channel/UCuLiRjE32T6-Vrnktyu5yuA"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/groups/cssbd2015"><i class="fa-brands fa-facebook"></i></a>
+                    </div>
+
+                    <div class="footer-fb-box">
+                        <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Forganizationofcss&tabs=timeline&width=340&height=220&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true"
+                                width="100%"
+                                height="220"
+                                style="border:none; overflow:hidden; border-radius:10px;"
+                                frameborder="0"
+                                scrolling="no"
+                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                                allowfullscreen="true">
+                        </iframe>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer-bottom text-center py-2">
+            © 2025 — CSS. All Rights Reserved.
+        </div>
+    </footer>
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+
+    <!-- Logout Confirmation Popup -->
+    <script>
+        function confirmLogout() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be logged out from your account!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, Logout',
+                cancelButtonText: 'Cancel',
+                backdrop: `rgba(0,0,0,0.5)`,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Account/Logout';
+
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                    if (token) {
+                        const cloned = token.cloneNode();
+                        cloned.value = token.value;
+                        form.appendChild(cloned);
+                    }
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+
+
+    <!-- ========================= -->
+    <!-- ⭐ BOTPRESS WIDGET + WAKE -->
+    <!-- ========================= -->
+    <!-- 1) Botpress Webchat Script -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.4/inject.js"></script>
+
+    <!-- 2) Latest Botpress Config Script (Replace with your LATEST file) -->
+    <script src="https://files.bpcontent.cloud/2025/11/30/20/20251130202802-QFLDURDA.js" defer></script>
+
+    <!-- 3) Wake Bot (Free plan sleeping fix) -->
+    <script>
+        async function wakeBot() {
+            try {
+                await fetch("https://messaging.botpress.cloud/v1/messages?botId=5eb4089e-2fff-4537-8ca5-5d60ab0c8e49", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        type: "text",
+                        text: "_wake_up_",
+                        userId: "css-wake-user"
+                    })
+                });
+                console.log("Bot awakened!");
+            } catch (e) {
+                console.log("Wake error:", e);
+            }
+        }
+        wakeBot();
+    </script>
+
+    <!-- 4) Botpress INIT (Default Bubble Enabled) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            window.botpress.init({
+                botId: "5eb4089e-2fff-4537-8ca5-5d60ab0c8e49",
+                clientId: "c0f5b2ad-e64e-49b0-9cb9-a375c7c5ce84",
+
+                theme: "light",
+                themeColor: "#3276EA",
+                disableAnimations: false,
+                disableSound: false,
+
+                // DEFAULT BOTPRESS BUBBLE (ON)
+                disableLauncher: false,
+                hideWidget: false
+            });
+
+        });
+    </script>
+
+
+    <script>
+        const publicVapidKey = "BOISTyIvgMsU2t69xAWjrU0s4_sywibXjzx_PuqTphpGfkBdPsHaa8A0FZ1xxWyaNnb-Nv2XZD4llgrbe2u0nFI";
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        async function registerPush() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                console.log("Push not supported");
+                return;
+            }
+
+            try {
+                const reg = await navigator.serviceWorker.register('/push-sw.js');
+                console.log("Service Worker Registered:", reg);
+
+                const permission = await Notification.requestPermission();
+                console.log("Notification permission:", permission);
+                if (permission !== 'granted') return;
+
+                const subscription = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+                });
+
+                console.log("Subscription:", subscription);
+
+                // send to server
+                await fetch('/Profile/SaveSubscription', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(subscription)
+                });
+
+                console.log('Subscribed and sent to server');
+            } catch (err) {
+                console.error('Push registration failed', err);
+            }
+        }
+
+        // Run only when user is authenticated
+        document.addEventListener('DOMContentLoaded', function () {
+            // If your server-side view can detect authentication, render registerPush only for logged-in users
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                    <text>
+                    registerPush();
+                    </text>
+            }
+        });
+
+    </script>
+
+
+    <script>
+        (async function() {
+            const DURATION_MS = 22000; // full loop duration in milliseconds (adjustable)
+
+            async function fetchNotices() {
+                try {
+                    const res = await fetch('/Notice/LatestNotices');
+                    if (!res.ok) throw new Error('Network response not ok');
+                    return await res.json();
+                } catch (e) {
+                    console.error('Notice fetch failed', e);
+                    return [];
+                }
+            }
+
+            function renderNotices(data) {
+                const container = document.getElementById('noticeContent');
+                if (!container) return;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<span>No notices available.</span>';
+                    return;
+                }
+
+                // Build content: join with separators
+                container.innerHTML = data.map(n =>
+                    `<a href="/Notice/ViewPdf/${n.id}" target="_blank" rel="noopener noreferrer">*** ${escapeHtml(n.title)} ***</a>`
+                ).join(' \u00A0|\u00A0 '); // non-breaking space around pipe
+            }
+
+            // small helper to avoid XSS if titles contain HTML
+            function escapeHtml(text) {
+                return String(text)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            function applyTimeSyncedAnimation() {
+                const el = document.getElementById('noticeContent');
+                if (!el) return;
+
+                // ensure animation properties applied (duration)
+                el.style.animationDuration = DURATION_MS + 'ms';
+                el.style.animationTimingFunction = 'linear';
+                el.style.animationIterationCount = 'infinite';
+                el.style.animationName = 'scroll-left';
+
+                // Compute offset from wall-clock so position appears continuous across reloads.
+                // Use milliseconds modulo duration to get progress within cycle.
+                const progress = Date.now() % DURATION_MS;
+
+                // set negative delay so the animation's current frame corresponds to wall-clock progress
+                el.style.animationDelay = `-${progress}ms`;
+
+                // Force reflow to ensure the style is applied
+                void el.offsetWidth;
+            }
+
+            // initialize
+            const data = await fetchNotices();
+            renderNotices(data);
+
+            // Wait a tick to ensure content width/padding applied, then set animation
+            // (small timeout helps ensure DOM updated)
+            setTimeout(() => {
+                applyTimeSyncedAnimation();
+            }, 30);
+
+            // OPTIONAL: refresh notices in background periodically (without restarting visual continuity)
+            // This will update the innerHTML if new notices arrive but maintain the animation synced by time.
+            setInterval(async () => {
+                const newData = await fetchNotices();
+                // naive check: if different length or first title changed, re-render
+                if (JSON.stringify(newData) !== JSON.stringify(data)) {
+                    renderNotices(newData);
+                    // reapply animation sync so position remains consistent
+                    applyTimeSyncedAnimation();
+                }
+            }, 60_000); // every 60s
+
+        })();
+    </script>
+
+    
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Desktop only
+            if (window.innerWidth > 576) {
+                const el = document.querySelector(".typewriter");
+
+                // Remove cursor after animation ends
+                setTimeout(() => {
+                    el.classList.add("finished");
+                }, 3000); // Duration should match typing duration
+            }
+
+        });
+    </script>
+
+
+
+</body>
+</html>

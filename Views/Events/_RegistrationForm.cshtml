@@ -1,0 +1,70 @@
+﻿@model CSS.Models.Event
+
+@* Success message after FREE registration *@
+@if (TempData["Registered"] != null)
+{
+    <div id="regSuccessAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["Registered"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form method="post"
+      asp-controller="Payment"
+      asp-action="Register"
+      enctype="multipart/form-data"
+      id="regForm"
+      onsubmit="return validateForm()">
+
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="eventId" value="@Model.Id" />
+    <input type="hidden" id="payMethod" name="PaymentMethod" />
+
+    <input class="form-control mb-2" name="FullName" placeholder="Full Name" required />
+    <input class="form-control mb-2" name="Mobile" placeholder="Mobile Number" required />
+    <input class="form-control mb-2" name="Email" placeholder="Email (optional)" />
+
+    <select name="Gender" class="form-select mb-2">
+        <option value="">Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+    </select>
+
+    <input class="form-control mb-2" name="InstituteName" placeholder="Institute Name" />
+    <input class="form-control mb-2" name="ClassName" placeholder="Class / Year" />
+
+    <textarea class="form-control mb-2" name="WhyJoin" rows="2" placeholder="Why join?"></textarea>
+
+    <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" name="WillVolunteer" />
+        <label class="form-check-label">I want to volunteer</label>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Your Photo (optional)</label>
+        <input type="file" name="UserImage" class="form-control" />
+    </div>
+
+    @if (Model.Price > 0)
+    {
+        <button type="button"
+                class="btn btn-danger w-100 fw-bold mb-2"
+                onclick="payNow()">
+            Pay with AamarPay For Register(৳ @Model.Price)
+        </button>
+    }
+    else
+    {
+        <button type="submit"
+                onclick="document.getElementById('payMethod').value='Free';"
+                class="btn btn-success w-100 fw-bold">
+            Register Free
+        </button>
+    }
+</form>
+
+@section Scripts {
+    <script src="~/js/registration.js"></script>
+}

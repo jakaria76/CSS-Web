@@ -1,0 +1,115 @@
+﻿.auth-full-bg {
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+.login-bg {
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+}
+
+.auth-card {
+    background: #ffffffdd;
+    padding: 35px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.auth-title {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: 700;
+    color: #182848;
+}
+
+.auth-subtitle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.auth-input {
+    height: 45px;
+    border-radius: 8px;
+}
+
+.auth-btn {
+    background: #182848;
+    color: white;
+    border-radius: 8px;
+    height: 45px;
+    font-weight: 600;
+}
+
+    .auth-btn:hover {
+        background: #0f1e39;
+    }
+
+.auth-link {
+    color: #182848;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+.google-btn {
+    background: linear-gradient(145deg, #4285F4, #357ae8);
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.25s ease;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(66, 133, 244, 0.4);
+}
+
+    .google-btn:hover {
+        background: linear-gradient(145deg, #3b78e0, #2f69cc);
+        box-shadow: 0 5px 14px rgba(66, 133, 244, 0.5);
+        transform: translateY(-2px);
+    }
+
+.google-icon {
+    width: 22px;
+    height: 22px;
+    filter: brightness(100%); /* white maintains visibility */
+}
+.social-btn {
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.25s;
+}
+
+    .social-btn span {
+        margin-left: 5px;
+    }
+
+    .social-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+.facebook {
+    background-color: #1877F2;
+}
+
+    .facebook:hover {
+        background-color: #0d5edb;
+    }
